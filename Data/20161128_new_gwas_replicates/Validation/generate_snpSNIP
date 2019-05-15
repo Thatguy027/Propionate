@@ -1,0 +1,13 @@
+
+
+
+vk primer snip --polymorphic --samples=BRC20067,DL238 --ref=WS248 --region=V:3500000-3650000 --enzymes=HF ~/Dropbox/AndersenLab/Reagents/WormReagents/Variation/Andersen_VCF/WI.20160408.vcf.gz > left.txt
+
+
+vk primer snip --polymorphic --samples=BRC20067,DL238 --ref=WS248 --region=V:4300000-4450000 --enzymes=HF ~/Dropbox/AndersenLab/Reagents/WormReagents/Variation/Andersen_VCF/WI.20160408.vcf.gz > right.txt
+
+
+vk primer snip --polymorphic --samples=BRC20067,DL238 --ref=WS248 --region=V:3000000-3500000 --enzymes=HF ~/Dropbox/AndersenLab/Reagents/WormReagents/Variation/Andersen_VCF/WI.20160408.vcf.gz > left_out.txt
+
+
+vk primer snip --polymorphic --samples=BRC20067,DL238 --ref=WS248 --region=V:4800000-5500000 --enzymes=HF ~/Dropbox/AndersenLab/Reagents/WormReagents/Variation/Andersen_VCF/WI.20160408.vcf.gz > right_out.txt
