@@ -2,6 +2,7 @@ library(pwr)
 library(data.table)
 library(tidyverse)
 library(lme4)
+library(ggbeeswarm)
 
 try(setwd(dirname(rstudioapi::getActiveDocumentContext()$path)))
 setwd("..")
@@ -11,7 +12,8 @@ prop <- data.table::fread("Data/Power/20160920_cleaned_survival.csv")
 ggplot(prop)+
   aes(x=strain,y= day2/day0)+
   geom_boxplot()+
-  geom_jitter()
+  theme_classic(18)+
+  geom_beeswarm()
 
 
 dd = seq(0.01,1,.01)
