@@ -1,0 +1,47 @@
+
+
+WARNING: RAxML is not checking sequences for duplicate seqs and sites with missing data!
+
+
+
+This is RAxML version 8.2.12 released by Alexandros Stamatakis on May 2018.
+
+With greatly appreciated code contributions by:
+Andre Aberer      (HITS)
+Simon Berger      (HITS)
+Alexey Kozlov     (HITS)
+Kassian Kobert    (HITS)
+David Dao         (KIT and HITS)
+Sarah Lutteropp   (KIT and HITS)
+Nick Pattengale   (Sandia)
+Wayne Pfeiffer    (SDSC)
+Akifumi S. Tanabe (NRIFS)
+Charlie Taylor    (UF)
+
+
+RAxML Bipartition Computation: Drawing support values from trees in file RAxML_bootstrap.elegans_hits_boot onto tree in file RAxML_bestTree.elegans_hits
+
+
+RAxML was called as follows:
+
+/projects/b1059/projects/Stefan/blast-nf/blast_software/standard-RAxML-8.2.12/raxmlHPC-AVX -m GTRGAMMA -p 12345 -f b -t RAxML_bestTree.elegans_hits -z RAxML_bootstrap.elegans_hits_boot -n elegans_partition 
+
+
+
+
+Found 1 tree in File RAxML_bestTree.elegans_hits
+
+
+
+Found 300 trees in File RAxML_bootstrap.elegans_hits_boot
+
+
+
+Found 1 tree in File RAxML_bestTree.elegans_hits
+
+
+
+Time for Computation of Bipartitions 0.007364
+Tree with bipartitions written to file:  /projects/b1059/projects/Stefan/blast-nf/test/RAxML_bipartitions.elegans_partition
+Tree with bipartitions as branch labels written to file:  /projects/b1059/projects/Stefan/blast-nf/test/RAxML_bipartitionsBranchLabels.elegans_partition
+Execution information file written to :  /projects/b1059/projects/Stefan/blast-nf/test/RAxML_info.elegans_partition

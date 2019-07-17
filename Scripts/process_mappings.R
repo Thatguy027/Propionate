@@ -220,8 +220,43 @@ ggsave(filename = "Plots/GWAS_Propionate_SKAT.png",
        width = 12,
        dpi = 300)
 
+# # # # # # # # # # # # # # variation in most sig genes from chrom1 skat qtl - glct-3 and nhr-77
 
+skat_genes <- query_vcf(c("WBGene00011779","WBGene00001642","nhr-77","glct-3"))
 
+c2_alt_chrv <- na.omit(c2_prmaps) %>%
+  dplyr::filter(CHROM == "V", POS < 5e6, allele == 1) %>%
+  dplyr::select(SAMPLE = strain, Sample_type = allele) %>%
+  dplyr::mutate(Sample_type = "ALT_CHRV")
+
+c2_high <- na.omit(c2_prmaps) %>%
+  dplyr::filter(CHROM == "V", POS < 5e6) %>%
+  dplyr::select(SAMPLE = strain, pheno = value) %>%
+  dplyr::filter(pheno > quantile(pheno, probs = 0.9)) %>%
+  dplyr::select(SAMPLE) %>%
+  dplyr::mutate(Sample_type = "q90_Pheno")
+
+c2_all <- dplyr::bind_rows(c2_alt_chrv, c2_high)
+
+pr_skat_genes <- skat_genes %>%
+  dplyr::filter(SAMPLE %in% c2_all$SAMPLE) %>%
+  dplyr::select(CHROM, POS, ALT, a1, a2, SAMPLE, effect, impact,gene_id, gene_name, aa_change) %>%
+  dplyr::left_join(.,c2_all, by="SAMPLE") %>%
+  dplyr::filter(ALT == a1,impact %in% c("MODERATE","HIGH"))
+
+gene_names <- pr_skat_genes %>%
+  dplyr::select(gene_id, gene_name) %>%
+  dplyr::distinct()
+
+gatk_variation <- data.table::fread("Data/GATK_variation/gatk_chr1_propionate_soft.tsv", col.names = c("CHROM", "POS", "REF", "ALT","SAMPLE","GT","FT","ANN")) %>%
+  dplyr::filter(SAMPLE %in% c2_all$SAMPLE) %>%
+  tidyr::separate(GT, into = c("a1", "a2")) %>%
+  tidyr::separate(ANN, into = c("Ann_ALT", "effect", "impact", "gene_id","WBGeneID2","feature_type","feature_id","transcript_biotype","a","b","aa_change","d","e","f"), sep = "\\|" ) %>%
+  dplyr::left_join(.,gene_names, by ="gene_id") %>%
+  dplyr::select(CHROM, POS, ALT, a1, a2, SAMPLE, effect, impact,gene_id, gene_name, aa_change) %>%
+  dplyr::left_join(.,c2_all, by="SAMPLE") %>%
+  dplyr::filter(!is.na(effect)) %>%
+  dplyr::filter(a1 == 1 | a2 == 1, impact %in% c("MODERATE","HIGH"))
 
 # # # # # # # # # # # # # # GLCT-3
 
