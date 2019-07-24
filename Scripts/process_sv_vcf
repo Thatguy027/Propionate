@@ -1,0 +1,30 @@
+NIC265_SnpEff.bed
+
+touch glct_SV.bed
+
+for b in `ls *_SnpEff.bed | grep -v "_HQ_"`; do  
+grep "WBGene00011650\|WBGene00008479\|WBGene00011781\|WBGene00008160\|WBGene00008293\|WBGene00019546" $b |\
+awk '$10 != "./." && $10 != "0/0" {print}' >> glct_SV.bed;
+done
+
+
+
+grep -v -F "\\./\\." XZ2018_HQ_SnpEff.bed
+
+
+bcftools query WI.DELLYsv.snpEff.vcf.gz -f '[%CHROM\t%POS\t%END\t%INFO/SVTYPE\t%SAMPLE\t%GT\t%INFO/ANN\n]' |\
+awk -F"|" '{print $1, $2, $3, $4, $5}' OFS="\t" |\
+awk '$6 != "./." && $6 != "0/0" {print}' |\
+grep "WBGene00011650\|WBGene00008479\|WBGene00011781\|WBGene00008160\|WBGene00008293\|WBGene00019546" > delly_glct.bed
+
+bcftools query WI.smoovesv.snpEff.vcf.gz -r I,IV -i 'GT="alt"' -f '[%CHROM\t%POS\t%END\t%INFO/SVTYPE\t%SAMPLE\t%GT\t%INFO/ANN\n]' |\
+grep "WBGene00011650\|WBGene00008479\|WBGene00011781\|WBGene00008160\|WBGene00008293\|WBGene00019546" |\
+awk -F"|" '{print $1, $2, $3, $4, $5}' OFS="\t" > smoove_glct.bed
+
+bcftools query WI.MANTAsv.LargeRemoved.snpeff.vcf.gz -r I,IV -i 'GT="alt"' -f '[%CHROM\t%POS\t%END\t%INFO/SVTYPE\t%SAMPLE\t%GT\t%INFO/ANN\n]' |\
+grep "WBGene00011650\|WBGene00008479\|WBGene00011781\|WBGene00008160\|WBGene00008293\|WBGene00019546" |\
+awk -F"|" '{print $1, $2, $3, $4, $5}' OFS="\t" > manta_glct.bed
+
+
+grep "WBGene00011650\|WBGene00008479\|WBGene00011781\|WBGene00008160\|WBGene00008293\|WBGene00019546" CB4932_SnpEff.bed |\
+awk '$10 != "./." && $10 != "0/0" {print}'
