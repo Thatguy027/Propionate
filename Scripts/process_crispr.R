@@ -22,3 +22,27 @@ phen %>%
 
 ggsave("Plots/Crispr_pheno.pdf", height = 4, width = 10)
 ggsave("Plots/Crispr_pheno.png", height = 4, width = 10, dpi = 300)
+
+
+run_TukeyHSD <- function(df){
+  stat_df <- df %>%
+    dplyr::select(strain, phenotype=survival)
+  
+  aov_res <- aov(stat_df$phenotype ~ stat_df$strain)
+  summary(aov_res)
+  tuk <- TukeyHSD(aov_res)
+  
+  psig=as.numeric(apply(tuk$`stat_df$strain`[,2:3],1,prod)>=0)+1
+  op=par(mar=c(4.2,9,3.8,2))
+  plot(tuk,col=psig,yaxt="n")
+  for (j in 1:length(psig)){
+    axis(2,at=j,labels=rownames(tuk$`stat_df$strain`)[length(psig)-j+1],
+         las=1,cex.axis=.8,col.axis=psig[length(psig)-j+1])
+  }
+  par(op)
+  
+  pwtuk <- TukeyHSD(aov_res)
+  
+  return(pwtuk)
+}
+run_TukeyHSD(phen)

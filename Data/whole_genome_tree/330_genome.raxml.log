@@ -1,0 +1,133 @@
+
+RAxML-NG v. 0.5.1b BETA released on 01.12.2017 by The Exelixis Lab.
+Authors: Alexey Kozlov, Alexandros Stamatakis, Diego Darriba, Tomas Flouri, Benoit Morel.
+Latest version: https://github.com/amkozlov/raxml-ng
+Questions/problems/suggestions? Please visit: https://groups.google.com/forum/#!forum/raxml
+
+WARNING: This is a BETA release, please use at your own risk!
+
+RAxML-NG was called as follows:
+
+raxml-ng --msa 330_genome.min330.phy --model GTR --prefix 330_genome --threads 20
+
+Analysis options:
+  run mode: ML tree search
+  start tree(s): random
+  random seed: 1534892774
+  tip-inner: ON
+  pattern compression: ON
+  per-rate scalers: OFF
+  site repeats: OFF
+  fast spr radius: AUTO
+  spr subtree cutoff: 1.000000
+  branch lengths: ML estimate (linked)
+  SIMD kernels: AVX2
+  parallelization: PTHREADS (20 threads)
+
+[00:00:00] Reading alignment from file: 330_genome.min330.phy
+[00:00:01] Loaded alignment with 330 taxa and 664691 sites
+
+Alignment comprises 1 partitions and 122941 patterns
+
+Partition 0: noname
+Model: GTR+FO
+Alignment sites / patterns: 664691 / 122941
+Gaps: 0.00 %
+Invariant sites: 0.01 %
+
+
+[00:00:05] Generating random starting tree(s) with 330 taxa
+[00:00:05] Data distribution: partitions/thread: 1-1, patterns/thread: 6147-6148
+
+Starting ML tree search with 1 distinct starting trees
+
+[00:00:06 -64112200.284639] Initial branch length optimization
+[00:00:07 -35271679.666975] Model parameter optimization (eps = 10.000000)
+[00:00:35 -34209667.608737] AUTODETECT spr round 1 (radius: 5)
+[00:01:12 -28314453.419395] AUTODETECT spr round 2 (radius: 10)
+[00:02:17 -24508281.431749] AUTODETECT spr round 3 (radius: 15)
+[00:03:56 -22784649.949775] AUTODETECT spr round 4 (radius: 20)
+[00:05:46 -22660159.075834] AUTODETECT spr round 5 (radius: 25)
+[00:07:44 -22581579.347708] SPR radius for FAST iterations: 25 (autodetect)
+[00:07:44 -22581579.347708] Model parameter optimization (eps = 3.000000)
+[00:08:02 -22581380.815688] FAST spr round 1 (radius: 25)
+[00:09:21 -21110407.151218] FAST spr round 2 (radius: 25)
+[00:10:29 -20955965.171913] FAST spr round 3 (radius: 25)
+[00:11:26 -20947735.145737] FAST spr round 4 (radius: 25)
+[00:12:19 -20946821.102820] FAST spr round 5 (radius: 25)
+[00:13:10 -20946134.335135] FAST spr round 6 (radius: 25)
+[00:14:01 -20945792.846192] FAST spr round 7 (radius: 25)
+[00:14:52 -20945786.000313] FAST spr round 8 (radius: 25)
+[00:15:42 -20945786.000225] Model parameter optimization (eps = 1.000000)
+[00:15:52 -20945774.956204] SLOW spr round 1 (radius: 5)
+[00:17:32 -20937950.917388] SLOW spr round 2 (radius: 5)
+[00:19:04 -20937105.176682] SLOW spr round 3 (radius: 5)
+[00:20:34 -20937105.176651] SLOW spr round 4 (radius: 10)
+[00:22:02 -20935595.098940] SLOW spr round 5 (radius: 5)
+[00:24:12 -20931270.796222] SLOW spr round 6 (radius: 5)
+[00:26:02 -20929690.305264] SLOW spr round 7 (radius: 5)
+[00:27:39 -20929690.305263] SLOW spr round 8 (radius: 10)
+[00:29:09 -20929690.305263] SLOW spr round 9 (radius: 15)
+[00:32:42 -20921512.032569] SLOW spr round 10 (radius: 5)
+[00:34:54 -20921512.032554] SLOW spr round 11 (radius: 10)
+[00:36:53 -20918964.957154] SLOW spr round 12 (radius: 5)
+[00:38:55 -20918945.598782] SLOW spr round 13 (radius: 5)
+[00:40:38 -20918930.090127] SLOW spr round 14 (radius: 5)
+[00:42:10 -20918930.090121] SLOW spr round 15 (radius: 10)
+[00:43:37 -20918930.090121] SLOW spr round 16 (radius: 15)
+[00:47:11 -20918613.287998] SLOW spr round 17 (radius: 5)
+[00:49:21 -20917360.855660] SLOW spr round 18 (radius: 5)
+[00:51:11 -20917360.855631] SLOW spr round 19 (radius: 10)
+[00:52:46 -20917360.855631] SLOW spr round 20 (radius: 15)
+[00:56:01 -20915990.513029] SLOW spr round 21 (radius: 5)
+[00:58:06 -20915300.257587] SLOW spr round 22 (radius: 5)
+[00:59:53 -20914115.228020] SLOW spr round 23 (radius: 5)
+[01:01:26 -20914115.228020] SLOW spr round 24 (radius: 10)
+[01:02:52 -20914115.228020] SLOW spr round 25 (radius: 15)
+[01:06:13 -20914115.228020] SLOW spr round 26 (radius: 20)
+[01:09:35 -20893768.106147] SLOW spr round 27 (radius: 5)
+[01:11:48 -20862091.656003] SLOW spr round 28 (radius: 5)
+[01:13:41 -20858336.893955] SLOW spr round 29 (radius: 5)
+[01:15:20 -20858052.516148] SLOW spr round 30 (radius: 5)
+[01:16:54 -20857410.310388] SLOW spr round 31 (radius: 5)
+[01:18:23 -20857320.840394] SLOW spr round 32 (radius: 5)
+[01:19:50 -20857304.797467] SLOW spr round 33 (radius: 5)
+[01:21:17 -20857297.047598] SLOW spr round 34 (radius: 5)
+[01:22:45 -20856788.811126] SLOW spr round 35 (radius: 5)
+[01:24:10 -20856577.078396] SLOW spr round 36 (radius: 5)
+[01:25:36 -20856577.078396] SLOW spr round 37 (radius: 10)
+[01:27:00 -20856577.078396] SLOW spr round 38 (radius: 15)
+[01:30:30 -20856577.078396] SLOW spr round 39 (radius: 20)
+[01:33:55 -20855388.052701] SLOW spr round 40 (radius: 5)
+[01:36:02 -20855388.052419] SLOW spr round 41 (radius: 10)
+[01:37:59 -20855388.052419] SLOW spr round 42 (radius: 15)
+[01:40:50 -20855388.052419] SLOW spr round 43 (radius: 20)
+[01:44:17 -20855388.052419] SLOW spr round 44 (radius: 25)
+[01:47:21 -20818249.138907] SLOW spr round 45 (radius: 5)
+[01:49:30 -20818249.138907] SLOW spr round 46 (radius: 10)
+[01:51:36 -20818249.138907] SLOW spr round 47 (radius: 15)
+[01:54:24 -20818249.138907] SLOW spr round 48 (radius: 20)
+[01:57:51 -20818249.138907] SLOW spr round 49 (radius: 25)
+[02:00:54 -20818249.138907] Model parameter optimization (eps = 0.100000)
+
+[02:01:01] ML tree search #1, logLikelihood: -20818248.527830
+
+
+Optimized model parameters:
+
+   Partition 0: noname
+   Rate heterogeneity: NONE
+   Base frequencies (ML): 0.267579 0.232768 0.232709 0.266944 
+   Substitution rates (ML): 0.993032 2.965659 1.359577 0.551322 2.972173 1.000000 
+
+Final LogLikelihood: -20818248.527830
+
+Best ML tree saved to: /projects/b1042/AndersenLab/work/e3/437d1c503a67a3737c7570da02a283/330_genome.raxml.bestTree
+Optimized model saved to: /projects/b1042/AndersenLab/work/e3/437d1c503a67a3737c7570da02a283/330_genome.raxml.bestModel
+
+Execution log saved to: /projects/b1042/AndersenLab/work/e3/437d1c503a67a3737c7570da02a283/330_genome.raxml.log
+
+Analysis started: 21-Aug-2018 18:06:14 / finished: 21-Aug-2018 20:07:16
+
+Elapsed time: 7261.893 seconds
+
