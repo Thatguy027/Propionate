@@ -6,6 +6,7 @@ library(cegwas2)
 library(tidyverse)
 library(ggtree)
 library(ape)
+library(ggrepel)
 
 get_vcf2 <- function() {
   # Function for fetching the path the VCF
@@ -57,16 +58,23 @@ strains_330 <- isolation_info%>%
 ggplot()+ geom_map(data=world, map=world,
                    aes(x=long, y=lat, map_id=region),
                    color=axis_color, fill=background_color, size=0.5)+
-  geom_point(data = strains_330 %>% dplyr::filter(a_col == "REF"), 
-             aes(x=as.numeric(long), y=as.numeric(lat), fill = a_col), 
-             color = "black",
-             shape = 21, 
-             size = 3) +
+  # geom_point(data = strains_330 %>% dplyr::filter(a_col == "REF"), 
+  #            aes(x=as.numeric(long), y=as.numeric(lat), fill = a_col), 
+  #            color = "black",
+  #            shape = 21, 
+  #            size = 3) +
   geom_point(data = strains_330 %>% dplyr::filter(a_col == "ALT"), 
              aes(x=as.numeric(long), y=as.numeric(lat), fill = a_col), 
              color = "black",
              shape = 21, 
-             size = 3) +
+             size = 4) +
+  geom_label_repel(
+    data          = strains_330 %>% dplyr::filter(a_col == "ALT"),
+    segment.size  = 0.2,
+    segment.color = "grey50",
+    aes(label = strain, x=as.numeric(long), y=as.numeric(lat)),
+    # direction = "x"
+  ) +
   scale_fill_manual(values = c("cadetblue3","hotpink3"))+
   theme_map()+
   labs(fill = "Gly16*") +
@@ -77,7 +85,11 @@ ggplot()+ geom_map(data=world, map=world,
         legend.key.size = unit(1, "cm")) 
 
 
-ggsave("Plots/world_distribution.pdf",height = 5, width = 10)
+
+
+  
+
+ggsave("Plots/world_distribution.pdf",height = 10, width = 20)
 
 alt_strains <- dplyr::filter(strains_330, a_col == "ALT") %>%
   dplyr::pull(strain)
@@ -114,3 +126,38 @@ clean_strains <- strains_in_tree %>%
 tree_pt %<+% clean_strains + 
   geom_tiplab2(aes(color=highlight_strains))+
   scale_color_manual(values=c("high" =highlight_color , "not" = background_color))
+
+
+
+
+mcolor_grp <- plot_df %>% dplyr::select(haplotype, color) %>% dplyr::distinct()
+mcolor <- mcolor_grp$color
+names(mcolor) <- mcolor_grp$haplotype
+
+strain_labels <- plot_df %>%
+  dplyr::select(isotype, plotpoint)
+
+plot_df %>%
+  dplyr::filter(chromosome == "I") %>%
+  ggplot(.,
+         aes(xmin = start/1E6, xmax = stop/1E6,
+             ymin = plotpoint - 0.5, ymax = plotpoint + 0.5,
+             fill = haplotype)) +
+  geom_rect() +
+  scale_fill_manual(values = mcolor) +
+  scale_y_continuous(breaks = strain_labels$plotpoint,
+                     labels = strain_labels$isotype,
+                     expand = c(0, 0)) +
+  xlab("Position (Mb)") +
+  theme_bw() +
+  xlim(12,13)+
+  facet_grid(.~chromosome, scales="free", space="free") +
+  theme(legend.position="none")
+
+
+allele_of_interest <- cegwas2::query_vcf(c("glct-3","glct-1","glct-2","glct-4","glct-5","glct-6"), vcf = get_vcf2()) 
+allele_of_interest%>%
+  dplyr::rowwise() %>%
+  dplyr::filter( impact == "HIGH", grepl(a1, ALT), a1!=REF)%>%
+  View()
+

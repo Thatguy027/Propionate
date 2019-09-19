@@ -22,7 +22,6 @@ phen %>%
 
 
 reg_pheno <- phen %>%
-  # dplyr::group_by(Strain) %>%
   dplyr::do(broom::augment(lm(Survival ~ Day, data =.)))%>%
   dplyr::select(-Survival) %>%
   dplyr::rename(Survival = .resid) %>%
