@@ -108,6 +108,8 @@ d_df <- data.frame(get.diversity(GENOME_OBJECT)[[1]]) %>%
   dplyr::select(CHROM:endWindow, nuc.diversity.within:Pi)
 
 d2_df <- dplyr::left_join(n_df,d_df, by = c("CHROM", "startWindow", "endWindow")) %>%
+  dplyr::ungroup() %>%
+  dplyr::mutate(theta_Watterson = c(GENOME_OBJECT@theta_Watterson)) %>%
   tidyr::gather(statistic, value, -(CHROM:endWindow))
 
 save(d2_df, file = glue::glue("{args[6]}_{args[1]}_{args[2]}-{args[3]}_Diversity_Statistics.Rda"))
