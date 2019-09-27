@@ -25,11 +25,11 @@ glct4 <- c(12317321, 12318735)
 glct5 <- c(12453389, 12454764)
 
 td_df <- d2_df %>%
-  dplyr::filter(statistic %in% c("n.segregating.sites")) %>%
+  dplyr::filter(statistic %in% c("theta_Watterson")) %>%
   dplyr::group_by(statistic) %>%
   dplyr::mutate(scaled_value = scale(value)) %>%
-  dplyr::mutate(q10 = quantile(value, 0.01, na.rm = T)) %>%
-  dplyr::mutate(outlier = ifelse(value < q10, "Low", "not"))
+  dplyr::mutate(q10 = quantile(value, 0.99, na.rm = T)) %>%
+  dplyr::mutate(outlier = ifelse(value > q10, "Low", "not"))
 
 chrom1 <- td_df %>%
   ggplot()+
@@ -51,9 +51,9 @@ chrom1 <- td_df %>%
   theme_bw(18) +
   theme(legend.position = "none", axis.title.x = element_blank()) +
   labs(x = "Genomic Position (Mb)",
-       y = "Fay and Wu's H") 
+       y = (expression(italic(theta["w"]))))
 
-
+expression(theta["w"])
 region <-  td_df %>%
   ggplot()+
   aes(x = startWindow/1e6, y = value, color = outlier)+
@@ -74,7 +74,7 @@ region <-  td_df %>%
   theme_bw(18) +
   theme(legend.position = "none", axis.title.x = element_blank()) +
   labs(x = "Genomic Position (Mb)",
-       y = "Fay and Wu's H") 
+       y = (expression(italic(theta["w"]))))
 
 cowplot::plot_grid(chrom1 + theme(axis.title.x = element_blank()),
                    region,

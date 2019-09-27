@@ -49,20 +49,30 @@ allele_of_interest <- allele_of_interest %>%
   dplyr::select(strain = SAMPLE, REF, ALT, a1, a2) %>%
   dplyr::mutate(a_col = ifelse(a1 == "T" | a2 == "T", "ALT", "REF"))
 
+g3 <- cegwas2::query_vcf(c("glct-3"), vcf = get_vcf2()) 
+
+
+alt_strains <-g3%>%
+  dplyr::rowwise() %>%
+  dplyr::filter( impact == "HIGH" & (a1==ALT || a2 == ALT || grepl(a1, ALT) )) %>% 
+  dplyr::filter(SAMPLE!="ECA701" & query == "glct-3") %>%
+  dplyr::select(strain = SAMPLE, gene_name, aa_change, REF, ALT, a1, a2) %>%
+  dplyr::mutate(a_col = ifelse((a1 == "T" | a2 == "T") & gene_name == "glct-3", "ALT", 
+                               ifelse(a1 == ALT | a2 == ALT,"ALT","REF")) )
+  
+
+
 strains_330 <- isolation_info%>%
   dplyr::filter(reference_strain == "True")%>%
   dplyr::select(strain = isotype, long = longitude, lat = latitude) %>%
-  dplyr::filter(strain%in% allele_of_interest$strain) %>%
-  dplyr::left_join(., allele_of_interest, by = "strain")  
+  dplyr::filter(strain%in% alt_strains$strain) %>%
+  dplyr::left_join(., alt_strains, by = "strain")  
 
-ggplot()+ geom_map(data=world, map=world,
-                   aes(x=long, y=lat, map_id=region),
-                   color=axis_color, fill=background_color, size=0.5)+
-  # geom_point(data = strains_330 %>% dplyr::filter(a_col == "REF"), 
-  #            aes(x=as.numeric(long), y=as.numeric(lat), fill = a_col), 
-  #            color = "black",
-  #            shape = 21, 
-  #            size = 3) +
+
+ggplot()+ 
+  geom_map(data=world, map=world,
+           aes(x=long, y=lat, map_id=region),
+           color=axis_color, fill=background_color, size=0.5)+
   geom_point(data = strains_330 %>% dplyr::filter(a_col == "ALT"), 
              aes(x=as.numeric(long), y=as.numeric(lat), fill = a_col), 
              color = "black",
@@ -84,24 +94,9 @@ ggplot()+ geom_map(data=world, map=world,
         legend.title = element_text(size = 22),
         legend.key.size = unit(1, "cm")) 
 
-
-
-
-  
-
 ggsave("Plots/world_distribution.pdf",height = 10, width = 20)
 
-g3 <- cegwas2::query_vcf(c("glct-3"), vcf = get_vcf2()) 
 
-
-alt_strains <- dplyr::filter(strains_330, a_col == "ALT") %>%
-  dplyr::pull(strain)
-
-alt_strains <-g3%>%
-  dplyr::rowwise() %>%
-  dplyr::filter( impact == "HIGH" & (a1==ALT || a2 == ALT || grepl(a1, ALT) )) %>% 
-  dplyr::filter(SAMPLE!="ECA701" & query == "glct-3") %>% #not a stop
-  dplyr::pull(SAMPLE)
 
 # load tree
 tree <- ape::read.tree(glue::glue("Data/whole_genome_tree/330_genome.raxml.bestTree"))
@@ -180,13 +175,22 @@ ggsave("Plots/haplotype.png",height = 12, width = 8)
 
 
 allele_of_interest <- cegwas2::query_vcf(c("glct-3","glct-1","glct-2","glct-4","glct-5","glct-6"), vcf = get_vcf2()) 
+
 allele_of_interest%>%
   dplyr::rowwise() %>%
   dplyr::filter( impact == "HIGH", grepl(a1, ALT), a1!=REF)%>%
   dplyr::group_by(query) %>%
   dplyr::summarise(ct = n())
 
+allele_of_interest%>%
+  dplyr::rowwise() %>%
+  dplyr::filter( impact == "HIGH", grepl(a1, ALT), a1!=REF)%>%
+  dplyr::group_by(SAMPLE) %>%
+  dplyr::summarise(ct = n()) %>%
+  View()
+
 glct_alts <-allele_of_interest%>%
   dplyr::rowwise() %>%
   dplyr::filter( impact == "HIGH" & (a1==ALT || a2 == ALT || grepl(a1, ALT) ), a1!=REF) 
 
+write.table(glct_alts, "Processed_Data/glct_gene_high_variant.txt", col.names = T, row.names = F, quote = F, sep = " ")
