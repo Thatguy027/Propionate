@@ -84,7 +84,7 @@ complete_h2 <- ggplot(herits_df)+
   geom_point(size = 4)+
   theme_classic(20)+
   annotate("text", x = herits_df$pa_conc, y = herits_df$H2+.05, label = herits_df$H2)+
-  labs(x = "Propionate Concentration (mM)", y = "Broad Sense Heritability")
+  labs(x = "Propionate Concentration (mM)", y = "Broad-Sense Heritability")
 
 ggsave("Plots/Complete_Propionate_DR_H2.pdf", 
        plot = complete_h2,
@@ -192,7 +192,7 @@ finescale_h2 <- ggplot(sampled_h2_df)+
   geom_boxplot()+
   ggbeeswarm::geom_beeswarm()+
   theme_classic(20)+
-  labs(x = "Propionate Concentration (mM)", y = "Broad Sense Heritability")
+  labs(x = "Propionate Concentration (mM)", y = "Broad-Sense Heritability")
 
 ggsave("Plots/Finescale_Propionate_DR_H2.pdf",
        plot = finescale_h2,
