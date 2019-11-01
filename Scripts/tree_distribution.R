@@ -95,6 +95,7 @@ ggplot()+
         legend.key.size = unit(1, "cm")) 
 
 ggsave("Plots/world_distribution.pdf",height = 10, width = 20)
+ggsave("Plots/world_distribution.svg",height = 10, width = 20)
 
 
 
@@ -102,23 +103,21 @@ ggsave("Plots/world_distribution.pdf",height = 10, width = 20)
 tree <- ape::read.tree(glue::glue("Data/whole_genome_tree/330_genome.raxml.bestTree"))
 
 # highlight branches for strains of interest
-branch_strains <- list(CONNECT = alt_strains)
+branch_strains <- list(CONNECT = alt_strains$strain)
 
 tree_pt_h <- ggtree::groupOTU(tree, branch_strains)
 
 ggtree(tree_pt_h,
        branch.length="rate", 
        aes(color=group)) + 
-  # geom_tiplab(align = T) +
   scale_color_manual(values=c("hotpink3", "cadetblue3"), 
-                     name = "Presence of TALT", 
-                     breaks=c("0", "TALT"),
-                     labels=c("FALSE", "TRUE")) + 
+                     name = "GLCT-3\nAllele", 
+                     labels=c("REF", "Gly16*")) + 
   theme(legend.position="right")+
   theme_tree2() 
 
 ggsave("Plots/genomewide_tree.pdf",height = 32, width = 12)
-
+ggsave("Plots/genomewide_tree.svg",height = 32, width = 12)
 
 # basic tree - circle
 tree_pt<-ggtree(tree,
@@ -133,45 +132,45 @@ tree_pt %<+% clean_strains +
 
 
 
-glct3 <- c(12385766, 12388791)
-
-mcolor_grp <- plot_df %>% dplyr::select(haplotype, color) %>% dplyr::distinct()
-mcolor <- mcolor_grp$color
-names(mcolor) <- mcolor_grp$haplotype
-
-strain_labels <- plot_df %>%
-  dplyr::mutate(alt_glct = ifelse(isotype %in% alt_strains, "ALT", "REF")) %>%
-  dplyr::distinct(isotype, plotpoint, alt_glct) %>%
-  dplyr::arrange(alt_glct, (plotpoint)) %>%
-  dplyr::mutate(plotpoint = row_number())
-
-plotdf <- plot_df %>%
-  dplyr::select(-plotpoint) %>%
-  dplyr::left_join(.,strain_labels, by = "isotype")
-
-plotdf %>%
-  dplyr::filter(chromosome == "I") %>%
-  dplyr::mutate(alt_glct = ifelse(isotype %in% alt_strains, "ALT", "REF")) %>%
-  ggplot(.,
-         aes(xmin = start/1E6, xmax = stop/1E6,
-             ymin = plotpoint - 0.5, ymax = plotpoint + 0.5,
-             fill = haplotype)) +
-  geom_rect() +
-  scale_fill_manual(values = mcolor) +
-  scale_y_continuous(breaks = strain_labels$plotpoint,
-                     labels = strain_labels$isotype,
-                     expand = c(0, 0)) +
-  xlab("Position (Mb)") +
-  theme_bw() +
-  coord_cartesian(xlim=c(12, 13)) +
-  geom_vline(aes(xintercept = glct3[1]/1e6)) +
-  geom_vline(aes(xintercept = glct3[2]/1e6)) +
-  facet_grid(alt_glct~chromosome, scales="free_y", space="free_y") +
-  theme(legend.position="none",
-        axis.text.y = element_blank(), 
-        axis.ticks.y = element_blank())
-
-ggsave("Plots/haplotype.png",height = 12, width = 8)
+# glct3 <- c(12385766, 12388791)
+# 
+# mcolor_grp <- plot_df %>% dplyr::select(haplotype, color) %>% dplyr::distinct()
+# mcolor <- mcolor_grp$color
+# names(mcolor) <- mcolor_grp$haplotype
+# 
+# strain_labels <- plot_df %>%
+#   dplyr::mutate(alt_glct = ifelse(isotype %in% alt_strains, "ALT", "REF")) %>%
+#   dplyr::distinct(isotype, plotpoint, alt_glct) %>%
+#   dplyr::arrange(alt_glct, (plotpoint)) %>%
+#   dplyr::mutate(plotpoint = row_number())
+# 
+# plotdf <- plot_df %>%
+#   dplyr::select(-plotpoint) %>%
+#   dplyr::left_join(.,strain_labels, by = "isotype")
+# 
+# plotdf %>%
+#   dplyr::filter(chromosome == "I") %>%
+#   dplyr::mutate(alt_glct = ifelse(isotype %in% alt_strains, "ALT", "REF")) %>%
+#   ggplot(.,
+#          aes(xmin = start/1E6, xmax = stop/1E6,
+#              ymin = plotpoint - 0.5, ymax = plotpoint + 0.5,
+#              fill = haplotype)) +
+#   geom_rect() +
+#   scale_fill_manual(values = mcolor) +
+#   scale_y_continuous(breaks = strain_labels$plotpoint,
+#                      labels = strain_labels$isotype,
+#                      expand = c(0, 0)) +
+#   xlab("Position (Mb)") +
+#   theme_bw() +
+#   coord_cartesian(xlim=c(12, 13)) +
+#   geom_vline(aes(xintercept = glct3[1]/1e6)) +
+#   geom_vline(aes(xintercept = glct3[2]/1e6)) +
+#   facet_grid(alt_glct~chromosome, scales="free_y", space="free_y") +
+#   theme(legend.position="none",
+#         axis.text.y = element_blank(), 
+#         axis.ticks.y = element_blank())
+# 
+# ggsave("Plots/haplotype.png",height = 12, width = 8)
 
 
 allele_of_interest <- cegwas2::query_vcf(c("glct-3","glct-1","glct-2","glct-4","glct-5","glct-6"), vcf = get_vcf2()) 

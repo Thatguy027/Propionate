@@ -4,9 +4,12 @@ library(cegwas)
 library(cegwas2)
 library(broom)
 library(cowplot)
+library(svglite)
 
 try(setwd(dirname(rstudioapi::getActiveDocumentContext()$path)))
 setwd("..")
+
+source("Scripts/Figure_Functions.R")
 
 p <- data.table::fread("Data/20161128_new_gwas_replicates/20170103_set1-3.csv")%>%
   dplyr::select(-number, -average)%>%
@@ -78,6 +81,7 @@ pheno_plot <- ggplot(pr_resid_pldf) +
 
 ggsave(pheno_plot, filename = "Plots/GWAS_Propionate_Phenotypes.pdf", height = 4, width = 10)
 ggsave(pheno_plot, filename = "Plots/GWAS_Propionate_Phenotypes.png", height = 4, width = 10, dpi = 300)
+ggsave(pheno_plot, filename = "Plots/GWAS_Propionate_Phenotypes.svg", height = 4, width = 10)
 
 p_reg <- pr_resid%>%
   dplyr::summarise(phenotype = mean(resid, na.rm = T))
@@ -152,6 +156,12 @@ ggsave("Plots/GWAS_Propionate_rrblup.png",
        width = 12,
        dpi = 300)
 
+ggsave("Plots/GWAS_Propionate_rrblup.svg", 
+       plot = rrblup_map,
+       height = 4,
+       width = 12)
+
+
 # figure 2 cowplot
 cowplot::plot_grid(pheno_plot,
                    rrblup_map,
@@ -162,6 +172,11 @@ cowplot::plot_grid(pheno_plot,
                    labels = "AUTO")
 
 ggsave("Plots/Figure2.png", 
+       height = 10,
+       width = 12,
+       dpi = 300)
+
+ggsave("Plots/Figure2.svg", 
        height = 10,
        width = 12,
        dpi = 300)
@@ -180,6 +195,7 @@ LD_output[[1]] +
 
 ggsave(filename = "Plots/GWAS_Peak_LD.pdf", height = 8, width = 12)
 ggsave(filename = "Plots/GWAS_Peak_LD.png", height = 8, width = 12, dpi = 300)
+ggsave(filename = "Plots/GWAS_Peak_LD.svg", height = 8, width = 12)
 
 # # # # # # # # # # # # # # # BURDEN MAPPING
 skat_maps <- data.table::fread("Processed_Data/GWAS_Skat.assoc") %>%
@@ -220,9 +236,14 @@ ggsave(filename = "Plots/GWAS_Propionate_SKAT.png",
        width = 12,
        dpi = 300)
 
+ggsave(filename = "Plots/GWAS_Propionate_SKAT.svg", 
+       plot = skat_plot,
+       height = 4, 
+       width = 12)
+
 # # # # # # # # # # # # # # variation in most sig genes from chrom1 skat qtl - glct-3 and nhr-77
 
-skat_genes <- query_vcf(c("WBGene00011779","WBGene00001642","nhr-77","glct-3"))
+skat_genes <- cegwas2::query_vcf(c("WBGene00011779","WBGene00001642","nhr-77","glct-3"))
 
 c2_alt_chrv <- na.omit(c2_prmaps) %>%
   dplyr::filter(CHROM == "V", POS < 5e6, allele == 1) %>%
@@ -323,7 +344,7 @@ glct_var_pt <- ggplot(plot_df)+
 
 ggsave(plot = glct_var_pt, filename = "Plots/glct3_geno_pheno.pdf", height = 6, width = 10)
 ggsave(plot = glct_var_pt, filename = "Plots/glct3_geno_pheno.png", height = 6, width = 10, dpi = 300)
-
+ggsave(plot = glct_var_pt, filename = "Plots/glct3_geno_pheno.svg", height = 6, width = 10)
 
 glct_3_crispr <- data.table::fread("Data/glct_deletion_expt.csv") %>%
   dplyr::select(BRC20067, DL238, glct3, Day) %>%

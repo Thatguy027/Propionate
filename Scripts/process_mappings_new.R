@@ -80,6 +80,7 @@ pheno_plot <- ggplot(pr_resid_pldf) +
 
 ggsave(pheno_plot, filename = "Plots/GWAS_Propionate_Phenotypes.pdf", height = 4, width = 10)
 ggsave(pheno_plot, filename = "Plots/GWAS_Propionate_Phenotypes.png", height = 4, width = 10, dpi = 300)
+ggsave(pheno_plot, filename = "Plots/GWAS_Propionate_Phenotypes.svg", height = 4, width = 10)
 
 p_reg <- pr_resid%>%
   dplyr::summarise(phenotype = mean(resid, na.rm = T))
@@ -154,6 +155,11 @@ ggsave("Plots/GWAS_Propionate_rrblup.png",
        width = 12,
        dpi = 300)
 
+ggsave("Plots/GWAS_Propionate_rrblup.svg", 
+       plot = rrblup_map,
+       height = 4,
+       width = 12)
+
 # # # # # # # # # # # # # # # BURDEN MAPPING
 skat_maps <- data.table::fread("Processed_Data/GWAS_Skat.assoc") %>%
   dplyr::rowwise()%>%
@@ -198,6 +204,10 @@ ggsave("Plots/Figure2.png",
        width = 12,
        dpi = 300)
 
+ggsave("Plots/Figure2.svg", 
+       height = 10,
+       width = 12,
+       dpi = 300)
 
 # # # # # # # # # # # # # # PLOT QTL LD
 
@@ -212,7 +222,7 @@ LD_output[[1]] +
 
 ggsave(filename = "Plots/GWAS_Peak_LD.pdf", height = 8, width = 12)
 ggsave(filename = "Plots/GWAS_Peak_LD.png", height = 8, width = 12, dpi = 300)
-
+ggsave(filename = "Plots/GWAS_Peak_LD.svg", height = 8, width = 12)
 
 # # # # # # # # # # # # # # all gene pxg
 
@@ -320,7 +330,7 @@ all_gene_plot <- cowplot::plot_grid(gene_plots[[1]]+ theme(axis.title.x = elemen
   
 ggsave(plot = all_gene_plot, filename = "Plots/chr1_gene_geno_pheno.pdf", height = 12, width = 20)
 ggsave(plot = all_gene_plot, filename = "Plots/chr1_gene_geno_pheno.png", height = 12, width = 20, dpi = 300)
-
+ggsave(plot = all_gene_plot, filename = "Plots/chr1_gene_geno_pheno.svg", height = 12, width = 20)
 
 # unique haplotypes that contain stop gain in glct-e
 glct_stop_hap <- dplyr::filter(temp_df, plot_gt!="REF", grepl("Gly16*", plot_gt)) %>% dplyr::pull(alt_ct) %>% unique()
@@ -392,117 +402,117 @@ glct_var_pt <- ggplot(plot_df)+
 
 ggsave(plot = glct_var_pt, filename = "Plots/glct3_geno_pheno.pdf", height = 6, width = 10)
 ggsave(plot = glct_var_pt, filename = "Plots/glct3_geno_pheno.png", height = 6, width = 10, dpi = 300)
-
-
-glct_3_crispr <- data.table::fread("Data/glct_deletion_expt.csv") %>%
-  dplyr::select(BRC20067, DL238, glct3, Day) %>%
-  tidyr::gather(Strain, pheno, -Day) 
-
-glct_plot <- glct_3_crispr %>%
-  ggplot()+
-  aes(x = Strain, y = pheno, fill = Strain) +
-  geom_boxplot() +
-  ggbeeswarm::geom_beeswarm() +
-  scale_fill_manual(values = c("hotpink3", "cadetblue3", "gray70"))+
-  labs(y = "L1 Survival") +
-  theme_classic(20) +
-  scale_x_discrete(labels=c("BRC20067" = "BRC20067", "DL238" = "DL238", "glct3" = expression("BRC20067 "~ Delta~italic("glct-3"))))+
-  theme(axis.title.x = element_blank(),
-        legend.position = "none")
-
-ggsave(plot = glct_plot, filename = "Plots/glct3_crispr.pdf", height = 6, width = 10)
-ggsave(plot = glct_plot, filename = "Plots/glct3_crispr.png", height = 6, width = 10, dpi = 300)
-
-plots <- align_plots(glct_var_pt, skat_plot, align = 'v', axis = 'l')
-
-bottom_plot <- cowplot::plot_grid(plots[[1]],
-                                  glct_plot,
-                   ncol =2, 
-                   label_size = 20, 
-                   align = "h", rel_widths = c(1,0.8),
-                   labels = c('B','C'))
-
-cowplot::plot_grid(plots[[2]],
-                   bottom_plot,
-                   ncol = 1,
-                   label_size = 20, 
-                   labels = c("A",""))
-
-
-ggsave(filename = "Plots/Figure4.pdf", height = 10, width = 14)
-ggsave(filename = "Plots/Figure4.png", height = 10, width = 14, dpi = 300)
-
-pr_genes <- genes%>%
-  dplyr::filter(strain == "CB4856")%>%
-  dplyr::distinct(CHROM,POS,aa_change, .keep_all = T)
-
-save(pr_genes, file ="~/Dropbox/AndersenLab/LabFolders/Stefan/Collaborations/propionic_acid/20161128_new_gwas_replicates/pr_genes.Rda")
-
-ggplot(pr_genes)+
-  aes(x = POS/1e6, y = abs_spearman_cor, fill = GT)+
-  geom_point(shape=21)+
-  scale_fill_manual(values = c("ALT" = "cyan", "REF" = "gray"))+
-  scale_color_manual(values = c("ALT" = "cyan", "REF" = "gray"))+
-  ggplot2::theme_bw() + 
-  ggplot2::theme(axis.text.x = ggplot2::element_text(size = 16, face = "bold", color = "black"),
-                 axis.text.y = ggplot2::element_text(size = 16, face = "bold", color = "black"), 
-                 axis.title.x = ggplot2::element_text(size = 20, face = "bold", color = "black", vjust = -0.3), 
-                 axis.title.y = ggplot2::element_text(size = 20, face = "bold", color = "black"), 
-                 strip.text.x = ggplot2::element_text(size = 16, face = "bold", color = "black"), 
-                 strip.text.y = ggplot2::element_text(size = 16,  face = "bold", color = "black"), 
-                 plot.title = ggplot2::element_text(size = 0,  face = "bold", vjust = 1),
-                 panel.background = ggplot2::element_rect(color = "black",  size = 1.2), 
-                 strip.background = ggplot2::element_rect(color = "black", size = 1.2),
-                 legend.position = 'none')+
-  labs(x = "Genomic Position (Mb)", y = expression(bold(paste("Spearman's ", bolditalic("rho")))))
-
-
-
-
-hist <-ggplot(p_reg)+
-  aes(x = phenotype)+
-  geom_histogram(color = "black", fill = "gray50")+
-  # scale_fill_manual(values = c("ALT" = "cyan", "REF" = "gray"))+
-  # scale_color_manual(values = c("ALT" = "cyan", "REF" = "gray"))+
-  ggplot2::theme_bw() + 
-  ggplot2::theme(axis.text.x = ggplot2::element_text(size = 14, face = "bold", color = "black"),
-                 axis.text.y = ggplot2::element_text(size = 14, face = "bold", color = "black"), 
-                 axis.title.x = ggplot2::element_text(size = 16, face = "bold", color = "black", vjust = -0.3), 
-                 axis.title.y = ggplot2::element_text(size = 18, color = "black"), 
-                 strip.text.x = ggplot2::element_text(size = 16, face = "bold", color = "black"), 
-                 strip.text.y = ggplot2::element_text(size = 16,  face = "bold", color = "black"), 
-                 plot.title = ggplot2::element_text(size = 0,  face = "bold", vjust = 1),
-                 panel.background = ggplot2::element_rect(color = "black",  size = 1.2), 
-                 strip.background = ggplot2::element_rect(color = "black", size = 1.2),
-                 legend.position = 'none')+
-  labs(x = "Regressed Propionate Survival", y = "Count")
-
-load( file ="~/Dropbox/AndersenLab/LabFolders/Stefan/Collaborations/propionic_acid/20161128_new_gwas_replicates/3set_pr_maps.Rda")
-
-mp <- manplot(pr_maps)
-
-mp <- mp[[1]] +  ggplot2::theme(axis.text.x = ggplot2::element_text(size = 14, face = "bold", color = "black"),
-                                axis.text.y = ggplot2::element_text(size = 14, face = "bold", color = "black"), 
-                                axis.title.x = ggplot2::element_text(size = 16, face = "bold", color = "black", vjust = -0.3), 
-                                axis.title.y = ggplot2::element_text(size = 18, face = "bold", color = "black"), 
-                                strip.text.x = ggplot2::element_text(size = 16, face = "bold", color = "black"), 
-                                strip.text.y = ggplot2::element_text(size = 16,  face = "bold", color = "black"), 
-                                plot.title = ggplot2::element_text(size = 0,  face = "bold", vjust = 1),
-                                panel.background = ggplot2::element_rect(color = "black",  size = 1.2), 
-                                strip.background = ggplot2::element_rect(color = "black", size = 1.2),
-                                legend.position = 'none')
-
-
-
-
-ggdraw() +
-  draw_plot(hist, 0, 0, .2667, .925) +
-  draw_plot(mp, .2667, 0, 1-.2667, 1) +
-  draw_plot_label(c("A", "B"), c(0, .2667), c(1, 1), size = 16)
-
-cowplot::ggsave(filename = "~/Dropbox/AndersenLab/LabFolders/Stefan/Collaborations/propionic_acid/grant_figure.png",
-                plot = last_plot(),
-                width = 15,
-                height = 4)
+ggsave(plot = glct_var_pt, filename = "Plots/glct3_geno_pheno.svg", height = 6, width = 10)
+# 
+# glct_3_crispr <- data.table::fread("Data/glct_deletion_expt.csv") %>%
+#   dplyr::select(BRC20067, DL238, glct3, Day) %>%
+#   tidyr::gather(Strain, pheno, -Day) 
+# 
+# glct_plot <- glct_3_crispr %>%
+#   ggplot()+
+#   aes(x = Strain, y = pheno, fill = Strain) +
+#   geom_boxplot() +
+#   ggbeeswarm::geom_beeswarm() +
+#   scale_fill_manual(values = c("hotpink3", "cadetblue3", "gray70"))+
+#   labs(y = "L1 Survival") +
+#   theme_classic(20) +
+#   scale_x_discrete(labels=c("BRC20067" = "BRC20067", "DL238" = "DL238", "glct3" = expression("BRC20067 "~ Delta~italic("glct-3"))))+
+#   theme(axis.title.x = element_blank(),
+#         legend.position = "none")
+# 
+# ggsave(plot = glct_plot, filename = "Plots/glct3_crispr.pdf", height = 6, width = 10)
+# ggsave(plot = glct_plot, filename = "Plots/glct3_crispr.png", height = 6, width = 10, dpi = 300)
+# 
+# plots <- align_plots(glct_var_pt, skat_plot, align = 'v', axis = 'l')
+# 
+# bottom_plot <- cowplot::plot_grid(plots[[1]],
+#                                   glct_plot,
+#                    ncol =2, 
+#                    label_size = 20, 
+#                    align = "h", rel_widths = c(1,0.8),
+#                    labels = c('B','C'))
+# 
+# cowplot::plot_grid(plots[[2]],
+#                    bottom_plot,
+#                    ncol = 1,
+#                    label_size = 20, 
+#                    labels = c("A",""))
+# 
+# 
+# ggsave(filename = "Plots/Figure4.pdf", height = 10, width = 14)
+# ggsave(filename = "Plots/Figure4.png", height = 10, width = 14, dpi = 300)
+# 
+# pr_genes <- genes%>%
+#   dplyr::filter(SAMPLEW == "CB4856")%>%
+#   dplyr::distinct(CHROM,POS,aa_change, .keep_all = T)
+# 
+# save(pr_genes, file ="~/Dropbox/AndersenLab/LabFolders/Stefan/Collaborations/propionic_acid/20161128_new_gwas_replicates/pr_genes.Rda")
+# 
+# ggplot(pr_genes)+
+#   aes(x = POS/1e6, y = abs_spearman_cor, fill = GT)+
+#   geom_point(shape=21)+
+#   scale_fill_manual(values = c("ALT" = "cyan", "REF" = "gray"))+
+#   scale_color_manual(values = c("ALT" = "cyan", "REF" = "gray"))+
+#   ggplot2::theme_bw() + 
+#   ggplot2::theme(axis.text.x = ggplot2::element_text(size = 16, face = "bold", color = "black"),
+#                  axis.text.y = ggplot2::element_text(size = 16, face = "bold", color = "black"), 
+#                  axis.title.x = ggplot2::element_text(size = 20, face = "bold", color = "black", vjust = -0.3), 
+#                  axis.title.y = ggplot2::element_text(size = 20, face = "bold", color = "black"), 
+#                  strip.text.x = ggplot2::element_text(size = 16, face = "bold", color = "black"), 
+#                  strip.text.y = ggplot2::element_text(size = 16,  face = "bold", color = "black"), 
+#                  plot.title = ggplot2::element_text(size = 0,  face = "bold", vjust = 1),
+#                  panel.background = ggplot2::element_rect(color = "black",  size = 1.2), 
+#                  strip.background = ggplot2::element_rect(color = "black", size = 1.2),
+#                  legend.position = 'none')+
+#   labs(x = "Genomic Position (Mb)", y = expression(bold(paste("Spearman's ", bolditalic("rho")))))
+# 
+# 
+# 
+# 
+# hist <-ggplot(p_reg)+
+#   aes(x = phenotype)+
+#   geom_histogram(color = "black", fill = "gray50")+
+#   # scale_fill_manual(values = c("ALT" = "cyan", "REF" = "gray"))+
+#   # scale_color_manual(values = c("ALT" = "cyan", "REF" = "gray"))+
+#   ggplot2::theme_bw() + 
+#   ggplot2::theme(axis.text.x = ggplot2::element_text(size = 14, face = "bold", color = "black"),
+#                  axis.text.y = ggplot2::element_text(size = 14, face = "bold", color = "black"), 
+#                  axis.title.x = ggplot2::element_text(size = 16, face = "bold", color = "black", vjust = -0.3), 
+#                  axis.title.y = ggplot2::element_text(size = 18, color = "black"), 
+#                  strip.text.x = ggplot2::element_text(size = 16, face = "bold", color = "black"), 
+#                  strip.text.y = ggplot2::element_text(size = 16,  face = "bold", color = "black"), 
+#                  plot.title = ggplot2::element_text(size = 0,  face = "bold", vjust = 1),
+#                  panel.background = ggplot2::element_rect(color = "black",  size = 1.2), 
+#                  strip.background = ggplot2::element_rect(color = "black", size = 1.2),
+#                  legend.position = 'none')+
+#   labs(x = "Regressed Propionate Survival", y = "Count")
+# 
+# load( file ="~/Dropbox/AndersenLab/LabFolders/Stefan/Collaborations/propionic_acid/20161128_new_gwas_replicates/3set_pr_maps.Rda")
+# 
+# mp <- manplot(pr_maps)
+# 
+# mp <- mp[[1]] +  ggplot2::theme(axis.text.x = ggplot2::element_text(size = 14, face = "bold", color = "black"),
+#                                 axis.text.y = ggplot2::element_text(size = 14, face = "bold", color = "black"), 
+#                                 axis.title.x = ggplot2::element_text(size = 16, face = "bold", color = "black", vjust = -0.3), 
+#                                 axis.title.y = ggplot2::element_text(size = 18, face = "bold", color = "black"), 
+#                                 strip.text.x = ggplot2::element_text(size = 16, face = "bold", color = "black"), 
+#                                 strip.text.y = ggplot2::element_text(size = 16,  face = "bold", color = "black"), 
+#                                 plot.title = ggplot2::element_text(size = 0,  face = "bold", vjust = 1),
+#                                 panel.background = ggplot2::element_rect(color = "black",  size = 1.2), 
+#                                 strip.background = ggplot2::element_rect(color = "black", size = 1.2),
+#                                 legend.position = 'none')
+# 
+# 
+# 
+# 
+# ggdraw() +
+#   draw_plot(hist, 0, 0, .2667, .925) +
+#   draw_plot(mp, .2667, 0, 1-.2667, 1) +
+#   draw_plot_label(c("A", "B"), c(0, .2667), c(1, 1), size = 16)
+# 
+# cowplot::ggsave(filename = "~/Dropbox/AndersenLab/LabFolders/Stefan/Collaborations/propionic_acid/grant_figure.png",
+#                 plot = last_plot(),
+#                 width = 15,
+#                 height = 4)
 
 

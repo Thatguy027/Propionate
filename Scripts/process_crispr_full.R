@@ -54,7 +54,7 @@ reg_pheno%>%
 
 ggsave("Plots/Crispr_pheno.pdf", height = 4, width = 10)
 ggsave("Plots/Crispr_pheno.png", height = 4, width = 10, dpi = 300)
-
+ggsave("Plots/Crispr_pheno.svg", height = 4, width = 10)
 
 run_TukeyHSD <- function(df){
   stat_df <- df %>%
