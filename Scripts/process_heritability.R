@@ -52,9 +52,12 @@ complete_drplt <- ggplot()+
   geom_smooth(aes(x = pa_conc, y = dose_mean, color = strain), 
               data = complete_dr_means %>% dplyr::filter(strain %in% c("N2", "DL238", "BRC20067")),
               span=.8) +
+  scale_x_continuous(limits = c(0, 150), breaks = unique(complete_dr_means$pa_conc)) +
+  scale_y_continuous(limits = c(-10, 120), breaks = c(0,25,50,75,100)) +
   scale_color_manual(values = c("cadetblue3", "orange")) +
+  geom_hline(aes(yintercept = 50), linetype = 2, color = "red", alpha = 0.7) +
   theme_classic(20) +
-  labs(x = "Propionate Concentration (mM)", y = "L1 Survival", color = "Strain")
+  labs(x = "Propionate Concentration (mM)", y = "L1 Survival (%)", color = "Strain")
 
 
 complete_drplt
@@ -65,6 +68,9 @@ ggsave("Plots/Complete_Propionate_DR.pdf",
 ggsave("Plots/Complete_Propionate_DR.png", 
        plot = complete_drplt,
        height = 4, width = 8, dpi = 300)
+ggsave("Plots/Complete_Propionate_DR.svg", 
+       plot = complete_drplt,
+       height = 4, width = 8)
 
 # # # # # H2
 
@@ -84,6 +90,7 @@ complete_h2 <- ggplot(herits_df)+
   geom_point(size = 4)+
   theme_classic(20)+
   annotate("text", x = herits_df$pa_conc, y = herits_df$H2+.05, label = herits_df$H2)+
+  scale_x_continuous(limits = c(0, 150), breaks = unique(complete_dr_means$pa_conc)) +
   labs(x = "Propionate Concentration (mM)", y = "Broad-Sense Heritability")
 
 ggsave("Plots/Complete_Propionate_DR_H2.pdf", 
@@ -92,6 +99,9 @@ ggsave("Plots/Complete_Propionate_DR_H2.pdf",
 ggsave("Plots/Complete_Propionate_DR_H2.png", 
        plot = complete_h2,
        height = 4, width = 6, dpi = 300)
+ggsave("Plots/Complete_Propionate_DR_H2.svg", 
+       plot = complete_h2,
+       height = 4, width = 6)
 
 ##################################### ##################################### Fine-scale Dose response
 
@@ -128,7 +138,9 @@ fine_scale_dr <- ggplot(fine_scale_dr_mean)+
               data = fine_scale_dr_mean %>% dplyr::filter(strain_name %in% c("N2", "DL238", "BRC20067")),
               span=1) +
   scale_color_manual(values = c("cadetblue3", "orange")) +
+  scale_x_continuous(limits = c(70, 120), breaks = as.numeric(unique(fine_scale_dr_mean$Concentration))) +
   theme_classic(20) +
+  geom_hline(aes(yintercept = 50), linetype = 2, color = "red", alpha = 0.7) +
   labs(x = "Propionate Concentration (mM)", y = "L1 Survival", color = "Strain")
 
 ggsave("Plots/Finescale_Propionate_DR.pdf", 
@@ -137,6 +149,10 @@ ggsave("Plots/Finescale_Propionate_DR.pdf",
 ggsave("Plots/Finescale_Propionate_DR.png", 
        plot = fine_scale_dr, 
        height = 4, width = 8, dpi = 300)
+ggsave("Plots/Finescale_Propionate_DR.svg", 
+       plot = fine_scale_dr, 
+       height = 4, width = 8)
+
 
 # # # # # H2 
 H2.fun1 <- function(x){
@@ -222,6 +238,9 @@ ggsave("Plots/Complete_DR_H2_Figure.png",
        width = 12,
        height = 6,
        dpi = 300)
+ggsave("Plots/Complete_DR_H2_Figure.svg",
+       width = 12,
+       height = 6)
 
 # finescale DR
 
@@ -237,3 +256,6 @@ ggsave("Plots/Finescale_DR_H2_Figure.png",
        width = 12,
        height = 6,
        dpi = 300)
+ggsave("Plots/Finescale_DR_H2_Figure.svg",
+       width = 12,
+       height = 6)
