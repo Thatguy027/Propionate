@@ -1,3 +1,2 @@
 gunzip -c WS266.gff3.gz | grep -f propionate_pathway_genes | awk '$3=="gene" {print}' | cut -f1,4,5 > prop_pathway_gene_loc.bed
-bcftools view -R prop_pathway_gene_loc.bed 328_Soft_csq_annotated.vcf.gz | bcftools query -i 'GT="alt"' -f '[%CHROM\t%POS\t%REF\t%ALT\t%FILTER\t%AF\t%SAMPLE\t%TGT\t%ANN\t%INFO/BCSQ\t%BCSQ\n]' > prop_pathway_alt_variants.tsv
-grep "HIGH\|MODERATE\|stop\|frameshift" prop_pathway_alt_variants.tsv > prop_pathway_alt_variants_mod_high_pass.tsv
+bcftools view -R prop_pathway_gene_loc.bed 328_Soft_csq_annotated.vcf.gz | bcftools query -i 'GT="alt"' -f '[%CHROM\t%POS\t%REF\t%ALT\t%FILTER\t%AF\t%SAMPLE\t%TGT\t%TBCSQ\n]' | grep PASS | grep -v synonymous | grep -v intron > prop_pathway_alt_variants_PASS.tsv
