@@ -87,3 +87,4 @@ ggplot(samp.all.df)+
 
 ggsave(filename = "Plots/Power_Calculation.pdf", height = 6, width = 10)
 ggsave(filename = "Plots/Power_Calculation.png", height = 6, width = 10, dpi = 300)
+ggsave(filename = "Plots/Power_Calculation.svg", height = 6, width = 10)
