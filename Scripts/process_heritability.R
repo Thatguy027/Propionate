@@ -53,9 +53,13 @@ complete_drplt <- ggplot()+
               data = complete_dr_means %>% dplyr::filter(strain %in% c("N2", "DL238", "BRC20067")),
               span=.8) +
   scale_x_continuous(limits = c(0, 150), breaks = unique(complete_dr_means$pa_conc)) +
-  scale_y_continuous(limits = c(-10, 120), breaks = c(0,25,50,75,100)) +
+  scale_y_continuous(breaks = c(0,25,50,75,100)) +
+  coord_cartesian(ylim=c(-10, 120)) +
   scale_color_manual(values = c("cadetblue3", "orange")) +
   geom_hline(aes(yintercept = 50), linetype = 2, color = "red", alpha = 0.7) +
+  # geom_vline(aes(xintercept = 85), linetype = 2, color = "orange", alpha = 0.7) +
+  geom_segment(aes(x = 85, xend=85, y=-20,yend=50), linetype = 2, color = "orange", alpha = 0.7) +
+  geom_segment(aes(x = 105, xend=105, y=-20,yend=50), linetype = 2, color = "cadetblue3", alpha = 0.7) +
   theme_classic(20) +
   labs(x = "Propionate Concentration (mM)", y = "L1 Survival (%)", color = "Strain")
 
@@ -140,7 +144,7 @@ fine_scale_dr <- ggplot(fine_scale_dr_mean)+
   scale_color_manual(values = c("cadetblue3", "orange")) +
   scale_x_continuous(limits = c(70, 120), breaks = as.numeric(unique(fine_scale_dr_mean$Concentration))) +
   theme_classic(20) +
-  geom_hline(aes(yintercept = 50), linetype = 2, color = "red", alpha = 0.7) +
+  geom_vline(aes(xintercept = 100), linetype = 2, color = "red", alpha = 0.7) +
   labs(x = "Propionate Concentration (mM)", y = "L1 Survival", color = "Strain")
 
 ggsave("Plots/Finescale_Propionate_DR.pdf", 
