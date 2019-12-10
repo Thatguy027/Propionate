@@ -27,6 +27,9 @@ p_pr <-  p%>%
   dplyr::filter(m_rat <= 1.5*sph+mph,
                 m_rat >= mph-1.5*sph)
 
+# unique(p_pr$strain)[!unique(p$strain)%in%unique(p_pr$strain)]
+# [1] "JU2464"
+
 pr_resid <- p_pr%>%
   ungroup()%>%
   dplyr::do(augment(lm(m_rat ~ set + replicate , data =.)))%>%
@@ -102,6 +105,11 @@ write.table(pa_pheno, file ="Processed_Data/GWAS_PRpheno.tsv", col.names = T, ro
 # load cegwas2 processed mapping
 
 c2_prmaps <- data.table::fread("Processed_Data/GWAS_processed_mapping_cegwas2.tsv")
+
+na.omit(c2_prmaps) %>%
+  dplyr::select(strain, value) %>%
+  dplyr::distinct() %>%
+  View()
 
 rrblup_map <- c2_prmaps %>%
   dplyr::filter(CHROM != "MtDNA") %>%
@@ -223,6 +231,88 @@ LD_output[[1]] +
 ggsave(filename = "Plots/GWAS_Peak_LD.pdf", height = 8, width = 12)
 ggsave(filename = "Plots/GWAS_Peak_LD.png", height = 8, width = 12, dpi = 300)
 ggsave(filename = "Plots/GWAS_Peak_LD.svg", height = 8, width = 12)
+
+# # # # # # # # # # # # # # QTL Heritability
+
+y = na.omit(c2_prmaps) %>%
+  dplyr::select(strain, value) %>%
+  dplyr::distinct()
+
+geno_matrix <- gm[colnames(gm) %in% y$strain] %>%
+  na.omit()
+
+# y <- y %>%
+#   dplyr::pull(value)
+
+Za <- diag(length(y))
+Ze <- diag(length(y))
+
+A <- sommer::A.mat(t(geno_matrix))
+E <- sommer::E.mat(t(geno_matrix))
+
+# additive only
+complete_broad <- sommer::mmer(value~1, 
+                               random=~vs(strain, Gu=A),
+                               rcov=~units, data = y)
+
+H2 <- pin(complete_broad, h1 ~ V1/(V1+V2) )
+
+y$strainE <- y$strain
+
+complete_broad_epp <- sommer::mmer(value~1, 
+                               random=~vs(strain, Gu=A) + vs(strainE,Gu=E),
+                               rcov=~units, data = y, tolparinv = 1e-06)
+
+H2epp_A <- pin(complete_broad_epp, h2 ~ (V1) / ( V1+V3) )
+H2epp_AE <- pin(complete_broad_epp, h2 ~ (V1+V2) / ( V1+V2+V3) )
+
+# heritability without including epistatic matrix (additive)
+H2
+# heritability including epistatic matrix (additive)
+H2epp_A
+# heritability including epistatic matrix (broad)
+H2epp_AE
+
+
+glct3 <- query_vcf("glct-3")
+
+pa_pheno <- na.omit(c2_prmaps) %>%
+  dplyr::distinct(strain, value)
+
+glct3_pr <- dplyr::filter(glct3, SAMPLE %in% unique(c2_prmaps$strain)) %>%
+  dplyr::select(strain = SAMPLE, REF, ALT, allele = a1, impact, effect, aa_change) %>%
+  dplyr::mutate(TGT = ifelse(allele == ALT, "ALT", "REF")) %>%
+  dplyr::left_join(., pa_pheno, by = "strain") %>%
+  dplyr::group_by(strain) %>%
+  dplyr::mutate(vt_ct = length(unique(TGT))) %>%
+  dplyr::filter(effect == "stop_gained") %>%
+  dplyr::arrange(strain)
+
+y$glct <- glct3_pr$allele
+
+# additive only
+complete_broad_glct <- sommer::mmer(value ~ glct, 
+                               random=~vs(strain, Gu=A),
+                               rcov=~units, data = y)
+
+H2_glct <- pin(complete_broad_glct, h1 ~ V1/(V1+V2) )
+
+# include epistatic
+complete_broad_epp_glct <- sommer::mmer(value ~ glct, 
+                                   random=~vs(strain, Gu=A) + vs(strainE,Gu=E),
+                                   rcov=~units, data = y, tolparinv = 1e-06)
+
+H2epp_A_glct <- pin(complete_broad_epp_glct, h2 ~ (V1) / ( V1+V3) )
+H2epp_AE_glct <- pin(complete_broad_epp_glct, h2 ~ (V1+V2) / ( V1+V2+V3) )
+
+# glct stop gain variant accounts for this much heritability:
+# heritability without including epistatic matrix (additive)
+(H2 - H2_glct)/H2
+# heritability including epistatic matrix (additive)
+(H2epp_A - H2epp_A_glct)/H2epp_A
+# heritability including epistatic matrix (broad)
+(H2epp_AE - H2epp_AE_glct)/H2epp_AE
+
 
 # # # # # # # # # # # # # # all gene pxg
 
