@@ -48,6 +48,8 @@ pr_resid <- p_pr%>%
   dplyr::mutate(m.p = mean(resid))%>%
   dplyr::arrange(desc(m.p))
 
+write.table(pr_resid, file ="Processed_Data/GWAS_PRpheno_replicates.tsv", col.names = T, row.names = F, quote = F, sep = "\t")
+
 pr_resid$strain <- factor(pr_resid$strain,levels = pr_resid$strain,labels = pr_resid$strain, ordered = T)
 
 pr_resid_pldf <- pr_resid %>%
@@ -65,6 +67,8 @@ pr_resid_pldf <- pr_resid %>%
   dplyr::mutate(st_colors = ifelse(strain == "N2", "N2",
                                    ifelse(strain == "BRC20067", "BRC20067",
                                           ifelse(strain == "DL238", "DL238", "not"))))
+
+
 
 pheno_plot <- ggplot(pr_resid_pldf) +
   aes(y = mph, x = strain, fill = st_colors) +

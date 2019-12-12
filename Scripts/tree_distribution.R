@@ -82,7 +82,7 @@ ggplot()+
     data          = strains_330 %>% dplyr::filter(a_col == "ALT"),
     segment.size  = 0.2,
     segment.color = "grey50",
-    aes(label = strain, x=as.numeric(long), y=as.numeric(lat)),
+    aes(label = strain, x=as.numeric(long), y=as.numeric(lat))
     # direction = "x"
   ) +
   scale_fill_manual(values = c("cadetblue3","hotpink3"))+
@@ -96,6 +96,29 @@ ggplot()+
 
 ggsave("Plots/world_distribution.pdf",height = 10, width = 20)
 ggsave("Plots/world_distribution.svg",height = 10, width = 20)
+
+
+
+
+strains_330 <- isolation_info%>%
+  dplyr::filter(reference_strain == "True")%>%
+  dplyr::select(strain = isotype, long = longitude, lat = latitude, elevation:substrate) %>%
+  # dplyr::filter(strain%in% alt_strains$strain) %>%
+  dplyr::left_join(., alt_strains, by = "strain")  
+
+
+strains_330$gene_name[is.na(strains_330$gene_name)] <- "ref"
+
+strains_330 <- strains_330 %>%
+  dplyr::select(strain, substrate, gene_name) %>%
+  dplyr::mutate(gene_name = ifelse(strain == "ECA369" |strain == "ECA347" | strain == "MY10" | gene_name == "glct-3", "glct-3", NA)) %>%
+  dplyr::mutate(val = 1) %>%
+  dplyr::filter(substrate!="None") 
+
+strains_330%>%
+  ggplot() + 
+  geom_bar(aes(y = val, x = gene_name, fill = substrate), position="fill", stat="identity", color = "black", size = 0.1)+
+  scale_fill_viridis_d()
 
 
 

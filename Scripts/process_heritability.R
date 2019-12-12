@@ -45,13 +45,15 @@ complete_dr_means <- complete_dr %>%
   dplyr::group_by(strain, pa_conc) %>%
   dplyr::mutate(dose_mean = mean(pheno))  
 
+write_tsv(complete_dr_means, path = "Processed_Data/processed_coarsescale_dr.tsv",col_names = T)
+
 complete_drplt <- ggplot()+
   geom_smooth(aes(x = pa_conc, y = dose_mean, group = strain), color = "black", fill = "gray90",
               data = complete_dr_means %>% dplyr::filter(!(strain %in% c("N2", "DL238"))),
-              span=.8) +
+              span=.8, size = 0.5) +
   geom_smooth(aes(x = pa_conc, y = dose_mean, color = strain), 
               data = complete_dr_means %>% dplyr::filter(strain %in% c("N2", "DL238", "BRC20067")),
-              span=.8) +
+              span=.8, size = 0.5) +
   scale_x_continuous(limits = c(0, 150), breaks = unique(complete_dr_means$pa_conc)) +
   scale_y_continuous(breaks = c(0,25,50,75,100)) +
   coord_cartesian(ylim=c(-10, 120)) +
@@ -60,8 +62,8 @@ complete_drplt <- ggplot()+
   # geom_vline(aes(xintercept = 85), linetype = 2, color = "orange", alpha = 0.7) +
   geom_segment(aes(x = 85, xend=85, y=-20,yend=50), linetype = 2, color = "orange", alpha = 0.7) +
   geom_segment(aes(x = 105, xend=105, y=-20,yend=50), linetype = 2, color = "cadetblue3", alpha = 0.7) +
-  theme_classic(20) +
-  labs(x = "Propionate Concentration (mM)", y = "L1 Survival (%)", color = "Strain")
+  theme_classic(14) +
+  labs(x = "Propionate concentration (mM)", y = "L1 survival (%)", color = "Strain")
 
 
 complete_drplt
@@ -89,13 +91,18 @@ for(i in 1:length(unique(complete_dr$pa_conc))){
 
 herits_df <- rbindlist(herits)
 
+label_df <- dplyr::filter(herits_df, pa_conc == 100)
+
+write_tsv(herits_df, path = "Processed_Data/processed_coarsescale_h2.tsv",col_names = T)
+
 complete_h2 <- ggplot(herits_df)+
   aes(x = pa_conc, y = H2)+
-  geom_point(size = 4)+
-  theme_classic(20)+
-  annotate("text", x = herits_df$pa_conc, y = herits_df$H2+.05, label = herits_df$H2)+
+  geom_point(size = 0.5)+
+  theme_classic(14)+
+  annotate("text", x = label_df$pa_conc, y = signif(label_df$H2,2)+.05, label = signif(label_df$H2,2), size = 4)+
   scale_x_continuous(limits = c(0, 150), breaks = unique(complete_dr_means$pa_conc)) +
-  labs(x = "Propionate Concentration (mM)", y = "Broad-Sense Heritability")
+  scale_y_continuous(limits = c(0,1),breaks = c(0,0.25,0.50,0.75,1)) +
+  labs(x = "Propionate concentration (mM)", y = "Broad-sense heritability")
 
 ggsave("Plots/Complete_Propionate_DR_H2.pdf", 
        plot = complete_h2,
@@ -134,18 +141,22 @@ fine_scale_dr_mean <- pheno3 %>%
   dplyr::group_by(strain_name, n_conc) %>%
   dplyr::mutate(dose_mean = mean(pheno, na.rm = T)) 
 
+write_tsv(fine_scale_dr_mean, path = "Processed_Data/processed_finescale_dr.tsv",col_names = T)
+
 fine_scale_dr <- ggplot(fine_scale_dr_mean)+
   geom_smooth(aes(x = n_conc, y = dose_mean, group = strain_name), color = "black", fill = "gray80",
-              data = fine_scale_dr_mean %>% dplyr::filter(!(strain %in% c("N2", "DL238"))),
-              span=1) +
-  geom_smooth(aes(x = n_conc, y = dose_mean, color = strain_name), 
+              data = fine_scale_dr_mean %>% dplyr::filter(!(strain %in% c("N2", "DL238", "BRC20067"))),
+              span=1, size = 0.5) +
+  geom_smooth(aes(x = n_conc, y = dose_mean, color = strain_name),
               data = fine_scale_dr_mean %>% dplyr::filter(strain_name %in% c("N2", "DL238", "BRC20067")),
-              span=1) +
+              span=1, size = 0.5) +
+  scale_y_continuous(breaks = c(0,25,50,75,100)) +
+  coord_cartesian(ylim=c(-10, 120)) +
   scale_color_manual(values = c("cadetblue3", "orange")) +
-  scale_x_continuous(limits = c(70, 120), breaks = as.numeric(unique(fine_scale_dr_mean$Concentration))) +
+  # scale_x_continuous(limits = c(70, 120), breaks = as.numeric(unique(fine_scale_dr_mean$Concentration))) +
   theme_classic(20) +
   geom_vline(aes(xintercept = 100), linetype = 2, color = "red", alpha = 0.7) +
-  labs(x = "Propionate Concentration (mM)", y = "L1 Survival", color = "Strain")
+  labs(x = "Propionate concentration (mM)", y = "L1 survival (%)", color = "Strain")
 
 ggsave("Plots/Finescale_Propionate_DR.pdf", 
        plot = fine_scale_dr, 
@@ -207,12 +218,15 @@ sampled_h2_df <- sampled_h2_df %>%
   mutate(n_conc = as.numeric(Concentration))%>%
   arrange(n_conc)
 
+write_tsv(sampled_h2_df, path = "Processed_Data/subsambled_finescale_h2.tsv",col_names = T)
+
 finescale_h2 <- ggplot(sampled_h2_df)+
   aes(x = factor(n_conc,ordered = TRUE), y = H2, group = Dose)+
-  geom_boxplot()+
-  ggbeeswarm::geom_beeswarm()+
+  geom_boxplot(width = 0.4, outlier.colour = NA)+
+  ggbeeswarm::geom_beeswarm(size = 0.5)+
+  scale_y_continuous(limits = c(0,1),breaks = c(0,0.25,0.50,0.75,1)) +
   theme_classic(20)+
-  labs(x = "Propionate Concentration (mM)", y = "Broad-Sense Heritability")
+  labs(x = "Propionate concentration (mM)", y = "Broad-sense heritability")
 
 ggsave("Plots/Finescale_Propionate_DR_H2.pdf",
        plot = finescale_h2,
@@ -263,3 +277,36 @@ ggsave("Plots/Finescale_DR_H2_Figure.png",
 ggsave("Plots/Finescale_DR_H2_Figure.svg",
        width = 12,
        height = 6)
+
+
+
+coarse_cow <- cowplot::plot_grid(lemon::reposition_legend(complete_drplt+ theme_classic(12)+theme(axis.text.x = element_blank(), axis.title.x = element_blank()) , 'top right'),
+                                 complete_h2+ theme_classic(12),
+                                 ncol = 1, label_size = 14,
+                                 labels = c("C", "D"), align = "hv")
+
+fine_cow <- cowplot::plot_grid(fine_scale_dr + 
+                                                          theme_classic(12)+
+                                                          theme(axis.text.x = element_blank(), 
+                                                                axis.title.x = element_blank(), legend.position = "none"),
+                   finescale_h2 + 
+                     theme_classic(12)+ 
+                     scale_x_discrete(expand=c(0,0)) + 
+                     expand_limits(x=0.8),
+                   ncol = 1, label_size = 14,
+                   labels = c("E", "F"), align = "hv")
+
+bottom <- cowplot::plot_grid(coarse_cow,
+                   fine_cow,
+                   ncol = 2, label_size = 14,
+                   labels = NA)
+
+
+cowplot::plot_grid(NULL,
+                   bottom,
+                   ncol = 1, label_size = 14,
+                   labels = NA, rel_heights = c(1,2))
+
+ggsave(filename = "Plots/SVG_PLOTS/Figure1_up.svg", height = 10, width = 6.5, units = "in")
+ggsave(filename = "Plots/SVG_PLOTS/Figure1_up.pdf", height = 10, width = 6.5, units = "in")
+ggsave(filename = "Plots/SVG_PLOTS/Figure1_up.png", height = 10, width = 6.5, units = "in")
