@@ -5,6 +5,8 @@ library(cegwas2)
 library(broom)
 library(cowplot)
 library(ggtree)
+library(ggbeeswarm)
+library(ggpubr)
 
 try(setwd(dirname(rstudioapi::getActiveDocumentContext()$path)))
 setwd("..")
@@ -39,6 +41,8 @@ reg_pheno <- phen %>%
   dplyr::select(-Survival) %>%
   dplyr::rename(Survival = final_pheno)
 
+l_compare <- list(c("BRC20067", "BRC20067_Del"), c("BRC20067", "BRC20067_Swap"), c("BRC20067", "DL238"))
+
 pheno_plot <- reg_pheno%>%
   ggplot()+
   aes(x = Strain, y = Survival, fill = Strain)+
@@ -53,7 +57,10 @@ pheno_plot <- reg_pheno%>%
   labs(y = "Normalized L1 survival") +
   scale_y_continuous(limits = c(0,1), expand = c(0.02, 0)) +
   theme(axis.title.x = element_blank(), 
-        legend.position = "none")
+        legend.position = "none") +
+  stat_compare_means(comparisons = l_compare, label.y = c(0.75, 0.85, 0.05),tip.length =c(0.01,0.01,-0.01),
+                     label = "p.signif", method = "t.test",
+                     ref.group = "BRC20067", hide.ns = TRUE, size = 5, color = "gray50")
 
 #####################################################################################################################################################################
 # load world map and remove antartica 
@@ -100,7 +107,9 @@ map <- ggplot()+
              shape = 21, 
              size = 2) +
   scale_fill_manual(values = c("cadetblue3","hotpink3"))+
-  theme_map()
+  theme_map()+
+  scale_y_continuous(expand=c(0.01,0.01))+
+  scale_x_continuous(expand=c(0.01,0.01))
 
 ##################################################################################################################################################################### GWAS pheno plot, by glct allele
 pr_resid <- data.table::fread("Processed_Data/GWAS_PRpheno_replicates.tsv")
@@ -155,10 +164,19 @@ glct_tree <- ggtree(tree_pt_h,
        branch.length="rate", 
        aes(color=group), size = 0.25) + 
   scale_color_manual(values=c("hotpink3", "cadetblue3"), 
-                     name = "GLCT-3\nAllele", 
+                     name = "GLCT-3\nallele", 
                      labels=c("REF", "Gly16*")) + 
   theme(legend.position="right")+
-  theme_tree2() + coord_flip() + scale_x_reverse() + scale_y_continuous(position = "right")
+  theme_classic(12) + 
+  coord_flip() + 
+  scale_x_reverse() +
+  scale_y_continuous(expand=c(0.01,0.01))+
+  theme(axis.line.y = element_line(),
+        axis.ticks.y = element_line(),
+        axis.text.y = element_text(),
+        axis.line.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.x = element_blank())
 
 
 
@@ -173,7 +191,7 @@ glct_tree <- ggtree(tree_pt_h,
 top_panel <- cowplot::plot_grid(gwas_split + theme(legend.position = "none"),
                                 pheno_plot + theme(axis.title.y = element_blank()), 
                                 nrow = 1, 
-                                rel_widths = c(2,3),
+                                rel_widths = c(2,4),
                                 label_size = 14,
                                 labels = c("A","B"), align = "hv")
 
@@ -182,7 +200,7 @@ fig4 <- cowplot::plot_grid(top_panel,
                    lemon::reposition_legend(glct_tree, "bottom left"), 
                    nrow = 3, 
                    label_size = 14,
-                   labels = c(NA,"C","D"), align = "hv")
+                   labels = c(NA,"C","D"), align = "h", scale = c(1,1,0.95))
 
 
 

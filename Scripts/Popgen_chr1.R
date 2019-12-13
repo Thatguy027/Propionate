@@ -25,7 +25,7 @@ glct4 <- c(12317321, 12318735)
 glct5 <- c(12453389, 12454764)
 
 td_df <- d2_df %>%
-  dplyr::filter(statistic %in% c("theta_Watterson")) %>%
+  dplyr::filter(statistic %in% c("Pi")) %>%
   dplyr::group_by(statistic) %>%
   dplyr::mutate(scaled_value = scale(value)) %>%
   dplyr::mutate(q10 = quantile(value, 0.99, na.rm = T)) %>%

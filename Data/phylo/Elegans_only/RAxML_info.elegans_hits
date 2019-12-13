@@ -19,9 +19,9 @@ Akifumi S. Tanabe (NRIFS)
 Charlie Taylor    (UF)
 
 
-Alignment has 450 distinct alignment patterns
+Alignment has 741 distinct alignment patterns
 
-Proportion of gaps and completely undetermined characters in this alignment: 24.85%
+Proportion of gaps and completely undetermined characters in this alignment: 34.60%
 
 RAxML rapid hill-climbing mode
 
@@ -36,7 +36,7 @@ GAMMA model of rate heterogeneity, ML estimate of alpha-parameter
 GAMMA Model parameters will be estimated up to an accuracy of 0.1000000000 Log Likelihood units
 
 Partition: 0
-Alignment Patterns: 450
+Alignment Patterns: 741
 Name: No Name Provided
 DataType: DNA
 Substitution Matrix: GTR
@@ -46,27 +46,27 @@ Substitution Matrix: GTR
 
 RAxML was called as follows:
 
-/projects/b1059/projects/Stefan/blast-nf/blast_software/standard-RAxML-8.2.12/raxmlHPC-AVX -p 12345 -s elegans_hits_aln.fa -n elegans_hits -m GTRGAMMA 
+/projects/b1059/projects/Stefan/blast-nf/blast_software/standard-RAxML-8.2.12/raxmlHPC-AVX -p 12345 -s ce_para_hits_aln.phyl -n elegans_hits -m GTRGAMMA 
 
 
 Partition: 0 with name: No Name Provided
-Base frequencies: 0.291 0.200 0.256 0.254 
+Base frequencies: 0.298 0.199 0.242 0.261 
 
-Inference[0]: Time 0.419654 GAMMA-based likelihood -5336.379167, best rearrangement setting 5
-alpha[0]: 0.734466 rates[0] ac ag at cg ct gt: 2.386850 3.576438 0.842035 0.835932 4.908414 1.000000 
+Inference[0]: Time 1.552930 GAMMA-based likelihood -9413.924107, best rearrangement setting 5
+alpha[0]: 0.749540 rates[0] ac ag at cg ct gt: 1.754678 2.792367 0.825365 1.028920 4.241349 1.000000 
 
 
 Conducting final model optimizations on all 1 trees under GAMMA-based models ....
 
-Inference[0] final GAMMA-based Likelihood: -5336.376993 tree written to file /projects/b1059/projects/Stefan/blast-nf/test/RAxML_result.elegans_hits
+Inference[0] final GAMMA-based Likelihood: -9413.921657 tree written to file /projects/b1059/projects/Stefan/blast-nf/test_nuc/RAxML_result.elegans_hits
 
 
-Starting final GAMMA-based thorough Optimization on tree 0 likelihood -5336.376993 .... 
+Starting final GAMMA-based thorough Optimization on tree 0 likelihood -9413.921657 .... 
 
-Final GAMMA-based Score of best tree -5336.376993
+Final GAMMA-based Score of best tree -9413.921657
 
-Program execution info written to /projects/b1059/projects/Stefan/blast-nf/test/RAxML_info.elegans_hits
-Best-scoring ML tree written to: /projects/b1059/projects/Stefan/blast-nf/test/RAxML_bestTree.elegans_hits
+Program execution info written to /projects/b1059/projects/Stefan/blast-nf/test_nuc/RAxML_info.elegans_hits
+Best-scoring ML tree written to: /projects/b1059/projects/Stefan/blast-nf/test_nuc/RAxML_bestTree.elegans_hits
 
-Overall execution time: 0.491845 secs or 0.000137 hours or 0.000006 days
+Overall execution time: 2.104915 secs or 0.000585 hours or 0.000024 days
 
