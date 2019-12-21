@@ -15,9 +15,9 @@ Akifumi S. Tanabe (NRIFS)
 Charlie Taylor    (UF)
 
 
-Alignment has 430 distinct alignment patterns
+Alignment has 342 distinct alignment patterns
 
-Proportion of gaps and completely undetermined characters in this alignment: 50.57%
+Proportion of gaps and completely undetermined characters in this alignment: 35.23%
 
 RAxML rapid hill-climbing mode
 
@@ -32,7 +32,7 @@ GAMMA model of rate heterogeneity, ML estimate of alpha-parameter
 GAMMA Model parameters will be estimated up to an accuracy of 0.1000000000 Log Likelihood units
 
 Partition: 0
-Alignment Patterns: 430
+Alignment Patterns: 342
 Name: No Name Provided
 DataType: AA
 Substitution Matrix: AUTO
@@ -51,39 +51,39 @@ Base frequencies: 0.087 0.044 0.039 0.057 0.019 0.037 0.058 0.083 0.024 0.048 0.
 
 Automatic protein model assignment algorithm using BIC criterion:
 
-	Partition: 0 best-scoring AA model: VT likelihood -6832.695128 with fixed base frequencies
+	Partition: 0 best-scoring AA model: VT likelihood -5039.728598 with fixed base frequencies
 
 
 Automatic protein model assignment algorithm using BIC criterion:
 
-	Partition: 0 best-scoring AA model: VT likelihood -6823.216944 with fixed base frequencies
+	Partition: 0 best-scoring AA model: VT likelihood -5037.741405 with fixed base frequencies
 
 
 Automatic protein model assignment algorithm using BIC criterion:
 
-	Partition: 0 best-scoring AA model: VT likelihood -6823.210144 with fixed base frequencies
+	Partition: 0 best-scoring AA model: VT likelihood -5037.386580 with fixed base frequencies
 
 
-Inference[0]: Time 37.621298 GAMMA-based likelihood -6823.209757, best rearrangement setting 5
-alpha[0]: 1.068509 
+Inference[0]: Time 32.298343 GAMMA-based likelihood -5036.906970, best rearrangement setting 5
+alpha[0]: 0.956316 
 
 
 Conducting final model optimizations on all 1 trees under GAMMA-based models ....
 
 Automatic protein model assignment algorithm using BIC criterion:
 
-	Partition: 0 best-scoring AA model: VT likelihood -6823.209757 with fixed base frequencies
+	Partition: 0 best-scoring AA model: VT likelihood -5036.906971 with fixed base frequencies
 
 
-Inference[0] final GAMMA-based Likelihood: -6823.209735 tree written to file /projects/b1059/projects/Stefan/blast-nf/test_protein/RAxML_result.elegans_para_hits
+Inference[0] final GAMMA-based Likelihood: -5036.906950 tree written to file /projects/b1059/projects/Stefan/blast-nf/test_protein/RAxML_result.elegans_para_hits
 
 
-Starting final GAMMA-based thorough Optimization on tree 0 likelihood -6823.209735 .... 
+Starting final GAMMA-based thorough Optimization on tree 0 likelihood -5036.906950 .... 
 
-Final GAMMA-based Score of best tree -6823.209735
+Final GAMMA-based Score of best tree -5036.906950
 
 Program execution info written to /projects/b1059/projects/Stefan/blast-nf/test_protein/RAxML_info.elegans_para_hits
 Best-scoring ML tree written to: /projects/b1059/projects/Stefan/blast-nf/test_protein/RAxML_bestTree.elegans_para_hits
 
-Overall execution time: 50.049964 secs or 0.013903 hours or 0.000579 days
+Overall execution time: 40.656754 secs or 0.011294 hours or 0.000471 days
 

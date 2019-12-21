@@ -144,3 +144,21 @@ figure2<-cowplot::plot_grid(pheno_plot,
 ggsave(filename = "Plots/SVG_PLOTS/Figure2_up.svg", height = 8, width = 6.5, units = "in")
 ggsave(filename = "Plots/SVG_PLOTS/Figure2_up.pdf", height = 8, width = 6.5, units = "in")
 ggsave(filename = "Plots/SVG_PLOTS/Figure2_up.png", height = 8, width = 6.5, units = "in")
+
+# figure s3
+
+# # # # # # # # # # # # # # PLOT QTL LD
+
+gm <- readr::read_tsv(glue::glue("Processed_Data/Genotype_Matrix.tsv"))
+
+LD_output <- Plot_Peak_LD(c2_prmaps, gm)
+
+ldplot <- LD_output[[1]] + 
+  theme_classic(12) + 
+  theme(axis.title.x = element_blank(),
+        axis.title.y = element_blank())
+
+
+ggsave(lemon::reposition_legend(ldplot , 'top left'), filename = "Plots/SVG_PLOTS/FigureS3.pdf", height = 6, width = 6)
+ggsave(lemon::reposition_legend(ldplot , 'top left'), filename = "Plots/SVG_PLOTS/FigureS3.png", height = 6, width = 6, dpi = 300)
+ggsave(lemon::reposition_legend(ldplot , 'top left'), filename = "Plots/SVG_PLOTS/FigureS3.svg", height = 6, width = 6)

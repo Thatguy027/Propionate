@@ -1,0 +1,12 @@
+PLINK v1.90b6.7 64-bit (2 Dec 2018)
+Options in effect:
+  --r2 with-freqs propionate_finemap.vcf.gz--allow-extra-chr propionate_finemap.vcf.gz--ld-window-r2 0 propionate_finemap.vcf.gz--ld-snp I:12385811 propionate_finemap.vcf.gz--ld-window $nsnps propionate_finemap.vcf.gz--ld-window-kb 6000 propionate_finemap.vcf.gz--chr $chromosome propionate_finemap.vcf.gz--out propionate_chrI propionate_finemap.vcf.gz--set-missing-var-ids @:# propionate_finemap.vcf.gz--vcf propionate_finemap.vcf.gz
+
+Hostname: stefans-imac.ad.medctr.ucla.edu
+Working directory: /Users/Stefan/github_repos/Propionate/vcf
+Start time: Tue Dec 17 13:56:53 2019
+
+Error: --r2 accepts at most 6 parameters.
+For more information, try 'plink --help [flag name]' or 'plink --help | more'.
+
+End time: Tue Dec 17 13:56:53 2019

@@ -33,7 +33,7 @@ Found 1 tree in File RAxML_bestTree.elegans_para_hits
 
 
 
-Found 250 trees in File RAxML_bootstrap.elegans_para_hits_boot
+Found 400 trees in File RAxML_bootstrap.elegans_para_hits_boot
 
 
 
@@ -41,7 +41,7 @@ Found 1 tree in File RAxML_bestTree.elegans_para_hits
 
 
 
-Time for Computation of Bipartitions 0.026221
+Time for Computation of Bipartitions 0.010590
 Tree with bipartitions written to file:  /projects/b1059/projects/Stefan/blast-nf/test_protein/RAxML_bipartitions.elegans_partition_paralogs
 Tree with bipartitions as branch labels written to file:  /projects/b1059/projects/Stefan/blast-nf/test_protein/RAxML_bipartitionsBranchLabels.elegans_partition_paralogs
 Execution information file written to :  /projects/b1059/projects/Stefan/blast-nf/test_protein/RAxML_info.elegans_partition_paralogs

@@ -1,6 +1,6 @@
 background_color <- "white"
 
-Plot_Peak_LD <- function(processed_mapping, genotype_matrix){
+Plot_Peak_LD <- function(processed_mapping, genotype_matrix, text_size = 4.5){
   snp_df <- processed_mapping %>% na.omit()
   ld_snps <- dplyr::filter(genotype_matrix, CHROM %in% snp_df$CHROM, POS %in% snp_df$POS)
   ld_snps <- data.frame(snp_id = paste(ld_snps$CHROM, ld_snps$POS, sep = "_"), data.frame(ld_snps)[, 5:ncol(ld_snps)])
@@ -21,15 +21,16 @@ Plot_Peak_LD <- function(processed_mapping, genotype_matrix){
   ldplot <- ggplot2::ggplot(LDs) + 
     ggplot2::aes(x = factor(SNP1, levels = unique(SNP1), ordered = T), 
                  y = factor(SNP2, levels = unique(SNP1), ordered = T)) + 
-    ggplot2::geom_tile(ggplot2::aes(fill = r2), color = background_color) + 
-    ggplot2::geom_text(ggplot2::aes(label = signif(r2, 3)), fontface = "bold", size = 4.5) + 
+    ggplot2::geom_tile(ggplot2::aes(fill = r2), color = NA) + 
+    ggplot2::geom_text(ggplot2::aes(label = signif(r2, 3)), fontface = "bold", size = text_size) + 
     scale_x_discrete(labels = function(x) {
       gsub("_", ":", x)
     }, expand = c(0, 0)) + 
     scale_y_discrete(position = "right",  
                      labels = function(x) {gsub("_", ":", x)}, 
                      expand = c(0, 0)) + 
-    scale_fill_continuous(high = "#FF0000", low = "white", na.value = "white")
+    scale_fill_continuous(high = "#FF0000", low = "white", na.value = "white")+
+    labs(fill = expression("R"^2))
   
   return(list(ldplot, LDs))
 }

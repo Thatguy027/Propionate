@@ -1,0 +1,34 @@
+PLINK v1.90b6.7 64-bit (2 Dec 2018)
+Options in effect:
+  --allow-extra-chr
+  --chr I
+  --ld-snp I:12385811
+  --ld-window 28021
+  --ld-window-kb 6000
+  --ld-window-r2 0
+  --out propionate_chrI_d
+  --r2 dprime with-freqs
+  --set-missing-var-ids @:#
+  --vcf prop_markers.vcf.gz
+
+Hostname: stefans-imac.ad.medctr.ucla.edu
+Working directory: /Users/Stefan/github_repos/Propionate/vcf
+Start time: Tue Dec 17 15:33:40 2019
+
+Random number seed: 1576625620
+32768 MB RAM detected; reserving 16384 MB for main workspace.
+--vcf: propionate_chrI_d-temporary.bed + propionate_chrI_d-temporary.bim +
+propionate_chrI_d-temporary.fam written.
+2138 variants loaded from .bim file.
+328 people (0 males, 0 females, 328 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to propionate_chrI_d.nosex .
+Using up to 6 threads (change this with --threads).
+Before main variant filters, 328 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+Total genotyping rate is 0.987363.
+2138 variants and 328 people pass filters and QC.
+Note: No phenotypes present.
+--r2 dprime with-freqs... done.
+Results written to propionate_chrI_d.ld .
+
+End time: Tue Dec 17 15:33:40 2019

@@ -31,7 +31,7 @@ glct5 <- c(12453389, 12454764)
 glct6 <- c(3784237, 3794152)
 
 td_df <- d2_df %>%
-  dplyr::filter(statistic %in% c("theta_Watterson")) %>%
+  dplyr::filter(statistic %in% c("Pi")) %>%
   dplyr::group_by(statistic) %>%
   dplyr::mutate(scaled_value = scale(value)) %>%
   dplyr::mutate(q10 = quantile(value, 0.99, na.rm = T)) %>%
@@ -85,7 +85,7 @@ region <-  td_df %>%
 load("Propionate_IV_1-17493829_Diversity_Statistics.Rda")
 
 glct6_r <- d2_df %>%
-  dplyr::filter(statistic %in% c("theta_Watterson")) %>%
+  dplyr::filter(statistic %in% c("Pi")) %>%
   dplyr::group_by(statistic) %>%
   dplyr::mutate(scaled_value = scale(value)) %>%
   dplyr::mutate(q10 = quantile(value, 0.99, na.rm = T)) %>%
@@ -150,7 +150,7 @@ p_t <- ggtree(p_tree) +
   theme(legend.position="right")+
   theme_classic(12) +
   geom_tiplab(size = 2) +
-  xlim(0,4.25)+ 
+  xlim(0,2.5)+ 
   # geom_label2(aes(label=bootstrap), size = 2) +
   theme(axis.line.y = element_blank(),
         axis.ticks.y = element_blank(),
@@ -169,12 +169,6 @@ p_t <- ggtree(p_tree) +
 # ggsave(filename = "Plots/SVG_PLOTS/Figure5.pdf", height = 10, width = 6.5, units = "in")
 # ggsave(filename = "Plots/SVG_PLOTS/Figure5.pdf", height = 10, width = 6.5, units = "in")
 
-
-bottom_plot <- cowplot::plot_grid(region + scale_y_continuous(limits = c(0,160),breaks = c(0,50,100, 150), expand = c(.01, 0)), 
-                                  glct6_r +
-                                  scale_y_continuous(limits = c(0,160),breaks = c(0,50,100, 150), expand = c(.01, 0)) +
-                                  theme(axis.title.y = element_blank(),
-                                        axis.text.y = element_blank())  , labels = c("C","D"), label_size = 14)
 
 fig5 <- cowplot::plot_grid(n_t ,
                    p_t,
@@ -196,21 +190,20 @@ ggsave(plot = fig5,filename = "Plots/SVG_PLOTS/Figure5.svg", height = 6, width =
 test_dnds <- PopGenome::readData("Data/phylo/Elegans_only/fasta", format = "phylip")
 
 
+cowplot::plot_grid(n_t ,
+                   p_t,
+                   region + scale_y_continuous(limits = c(0,20),breaks = c(0,5,10, 20), expand = c(.01, 0)),
+                   glct6_r +
+                     scale_y_continuous(limits = c(0,20),breaks = c(0,5,10, 20), expand = c(.01, 0)) +
+                     theme(axis.title.y = element_blank(),
+                           axis.text.y = element_blank(),
+                           plot.margin = margin(.1, .1, .1, .1, "cm")) ,
+                   ncol = 2,
+                   labels = "AUTO", label_size = 14, align = "hv")
+
   # compare trees
 p_tree <- treeio::read.raxml("Data/phylo/Protein/RAxML_bipartitionsBranchLabels.elegans_partition_paralogs")
 
-original <- p_tree@phylo$tip.label
-clean_names <- c("GLCT-2", "GLCT-3", "GLCT-6", "GLCT-4","GLCT-5","GLCT-1")
-rename_df <- data.frame(label = original, newlab = clean_names)
-
-p_tree_comp <- treeio::rename_taxa(p_tree, rename_df, label, newlab)
-
 n_tree <- treeio::read.raxml("Data/phylo/Elegans_only/RAxML_bipartitionsBranchLabels.elegans_partition")
 
-original <- n_tree@phylo$tip.label
-clean_names <- c("GLCT-5", "GLCT-6", "GLCT-6", "GLCT-6","GLCT-1","GLCT-2","GLCT-3","GLCT-4")
-rename_df <- data.frame(label = original, newlab = clean_names)
-
-n_tree_comp <- treeio::rename_taxa(n_tree, rename_df, label, newlab)
-
-ape::comparePhylo(n_tree_comp@phylo, p_tree_comp@phylo, plot = TRUE, force.rooted = F,use.edge.length = TRUE)
+ape::comparePhylo(n_tree@phylo, p_tree@phylo, plot = TRUE, force.rooted = F,use.edge.length = TRUE)

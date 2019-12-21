@@ -154,46 +154,61 @@ tree_pt %<+% clean_strains +
   scale_color_manual(values=c("high" =highlight_color , "not" = background_color))
 
 
+qtl_end <- 12388791
+glct3 <- c(12385766, 12388791)
+glct1 <- c(12337968, 12339239)
+glct2 <- c(12435726, 12437285)
+glct4 <- c(12317321, 12318735)
+glct5 <- c(12453389, 12454764)
+glct6 <- c(3784237, 3794152)
+glct3 <- c(12385766, 12388791)
 
-# glct3 <- c(12385766, 12388791)
-# 
-# mcolor_grp <- plot_df %>% dplyr::select(haplotype, color) %>% dplyr::distinct()
-# mcolor <- mcolor_grp$color
-# names(mcolor) <- mcolor_grp$haplotype
-# 
-# strain_labels <- plot_df %>%
-#   dplyr::mutate(alt_glct = ifelse(isotype %in% alt_strains, "ALT", "REF")) %>%
-#   dplyr::distinct(isotype, plotpoint, alt_glct) %>%
-#   dplyr::arrange(alt_glct, (plotpoint)) %>%
-#   dplyr::mutate(plotpoint = row_number())
-# 
-# plotdf <- plot_df %>%
-#   dplyr::select(-plotpoint) %>%
-#   dplyr::left_join(.,strain_labels, by = "isotype")
-# 
-# plotdf %>%
-#   dplyr::filter(chromosome == "I") %>%
-#   dplyr::mutate(alt_glct = ifelse(isotype %in% alt_strains, "ALT", "REF")) %>%
-#   ggplot(.,
-#          aes(xmin = start/1E6, xmax = stop/1E6,
-#              ymin = plotpoint - 0.5, ymax = plotpoint + 0.5,
-#              fill = haplotype)) +
-#   geom_rect() +
-#   scale_fill_manual(values = mcolor) +
-#   scale_y_continuous(breaks = strain_labels$plotpoint,
-#                      labels = strain_labels$isotype,
-#                      expand = c(0, 0)) +
-#   xlab("Position (Mb)") +
-#   theme_bw() +
-#   coord_cartesian(xlim=c(12, 13)) +
-#   geom_vline(aes(xintercept = glct3[1]/1e6)) +
-#   geom_vline(aes(xintercept = glct3[2]/1e6)) +
-#   facet_grid(alt_glct~chromosome, scales="free_y", space="free_y") +
-#   theme(legend.position="none",
-#         axis.text.y = element_blank(), 
-#         axis.ticks.y = element_blank())
-# 
-# ggsave("Plots/haplotype.png",height = 12, width = 8)
+mcolor_grp <- plot_df %>% dplyr::select(haplotype, color) %>% dplyr::distinct()
+mcolor <- mcolor_grp$color
+names(mcolor) <- mcolor_grp$haplotype
+
+strain_labels <- plot_df %>%
+  dplyr::mutate(alt_glct = ifelse(isotype %in% alt_strains$strain, "ALT", "REF")) %>%
+  dplyr::distinct(isotype, plotpoint, alt_glct) %>%
+  dplyr::arrange(alt_glct, (plotpoint)) %>%
+  dplyr::mutate(plotpoint = row_number())
+
+plotdf <- plot_df %>%
+  dplyr::select(-plotpoint) %>%
+  dplyr::left_join(.,strain_labels, by = "isotype")
+
+plotdf %>%
+  dplyr::filter(chromosome == "I") %>%
+  dplyr::mutate(alt_glct = ifelse(isotype %in% alt_strains$strain, "ALT", "REF")) %>%
+  ggplot(.,
+         aes(xmin = start/1E6, xmax = stop/1E6,
+             ymin = plotpoint - 0.5, ymax = plotpoint + 0.5,
+             fill = haplotype)) +
+  geom_rect() +
+  scale_fill_manual(values = mcolor) +
+  scale_y_continuous(breaks = strain_labels$plotpoint,
+                     labels = strain_labels$isotype,
+                     expand = c(0, 0)) +
+  xlab("Position (Mb)") +
+  theme_bw() +
+  # coord_cartesian(xlim=c(12, 13)) +
+  geom_vline(aes(xintercept = glct3[1]/1e6), color = "#E68FAC")+
+  geom_vline(aes(xintercept = glct3[2]/1e6), color = "#E68FAC")+
+  geom_vline(aes(xintercept = glct1[1]/1e6), color = "gray80")+
+  geom_vline(aes(xintercept = glct1[2]/1e6), color = "gray80")+
+  geom_vline(aes(xintercept = glct2[1]/1e6), color = "gray60")+
+  geom_vline(aes(xintercept = glct2[2]/1e6), color = "gray60")+
+  geom_vline(aes(xintercept = glct4[1]/1e6), color = "gray40")+
+  geom_vline(aes(xintercept = glct4[2]/1e6), color = "gray40")+
+  geom_vline(aes(xintercept = glct5[1]/1e6), color = "gray20")+
+  geom_vline(aes(xintercept = glct5[2]/1e6), color = "gray20")+
+  facet_grid(alt_glct~., scales="free_y", space="free_y") +
+  theme(legend.position="none",
+        # axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
+
+ggsave("Plots/haplotype.png",height = 48, width = 12)
+ggsave("Plots/haplotype_zoom.png",height = 48, width = 12)
 
 
 allele_of_interest <- cegwas2::query_vcf(c("glct-3","glct-1","glct-2","glct-4","glct-5","glct-6"), vcf = get_vcf2()) 
