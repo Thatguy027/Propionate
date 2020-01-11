@@ -109,19 +109,19 @@ map <- ggplot()+
              aes(x=as.numeric(long), y=as.numeric(lat)), 
              fill = "hotpink3",
              shape = 21, 
-             size = 0.5, stroke = 0.1) +
+             size = 1, stroke = 0.1) +
   geom_point(data = strains_330 %>% dplyr::filter(!is.na(aa_change)), 
              aes(x=as.numeric(long), y=as.numeric(lat)), 
              fill = "cadetblue3",
              shape = 21, 
-             size = 1, stroke = 0.1) +
+             size = 1.5, stroke = 0.1) +
   scale_fill_manual(values = c("cadetblue3","hotpink3"))+
   theme_map()+
   scale_y_continuous(expand=c(0.01,0.01))+
   scale_x_continuous(expand=c(0.01,0.01))
 
-ggsave(plot = map, "Plots/SVG_PLOTS/FigureSXX_MAP.pdf", height = 3, width = 6.5, units = "in")
-ggsave(plot = map, "Plots/SVG_PLOTS/FigureSXX_MAP.png", height = 3, width = 6.5, units = "in", dpi = 300)
+ggsave(plot = map, "Plots/SVG_PLOTS/FigureSXX_MAP.pdf", height = 4, width = 6.5, units = "in")
+ggsave(plot = map, "Plots/SVG_PLOTS/FigureSXX_MAP.png", height = 4, width = 6.5, units = "in", dpi = 300)
 
 ##################################################################################################################################################################### GWAS pheno plot, by glct allele
 pr_resid <- data.table::fread("Processed_Data/GWAS_PRpheno_replicates.tsv")
