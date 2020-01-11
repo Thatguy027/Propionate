@@ -40,7 +40,7 @@ complete_drplt <- ggplot()+
 
 complete_h2 <- ggplot(herits_df)+
   aes(x = pa_conc, y = H2)+
-  geom_point(size = 0.5)+
+  geom_point(size = 2)+
   theme_classic(14)+
   annotate("text", x = label_df$pa_conc, y = signif(label_df$H2,2)+.05, label = signif(label_df$H2,2), size = 4)+
   scale_x_continuous(limits = c(0, 150), breaks = unique(complete_dr_means$pa_conc)) +

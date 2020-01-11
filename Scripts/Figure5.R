@@ -13,6 +13,8 @@
 
 library(tidyverse)
 library(ggtree)
+library(ape)
+library(treespace)
 
 try(setwd(dirname(rstudioapi::getActiveDocumentContext()$path)))
 setwd("..")
@@ -31,7 +33,7 @@ glct5 <- c(12453389, 12454764)
 glct6 <- c(3784237, 3794152)
 
 td_df <- d2_df %>%
-  dplyr::filter(statistic %in% c("Pi")) %>%
+  dplyr::filter(statistic %in% c("theta_Watterson")) %>%
   dplyr::group_by(statistic) %>%
   dplyr::mutate(scaled_value = scale(value)) %>%
   dplyr::mutate(q10 = quantile(value, 0.99, na.rm = T)) %>%
@@ -84,8 +86,16 @@ region <-  td_df %>%
 
 load("Propionate_IV_1-17493829_Diversity_Statistics.Rda")
 
+glct6_df <- d2_df %>%
+  dplyr::filter(statistic %in% c("theta_Watterson")) %>%
+  dplyr::group_by(statistic) %>%
+  dplyr::mutate(scaled_value = scale(value)) %>%
+  dplyr::mutate(q10 = quantile(value, 0.99, na.rm = T)) %>%
+  dplyr::mutate(outlier = ifelse(value > q10, "Low", "not"))
+
+
 glct6_r <- d2_df %>%
-  dplyr::filter(statistic %in% c("Pi")) %>%
+  dplyr::filter(statistic %in% c("theta_Watterson")) %>%
   dplyr::group_by(statistic) %>%
   dplyr::mutate(scaled_value = scale(value)) %>%
   dplyr::mutate(q10 = quantile(value, 0.99, na.rm = T)) %>%
@@ -104,10 +114,29 @@ glct6_r <- d2_df %>%
        y = (expression(italic(theta["w"]))))
 
 
+gene_locs <- data.frame(CHROM = c("I","I","I","I","I","IV"),
+                        gene_name = c("glct1","glct2","glct3","glct4","glct5","glct6"),
+                        gene_pos = c(12337968,12435726,12385766,12317321,12453389,3784237))
+
+facet_theta <- dplyr::bind_rows(td_df %>% dplyr::filter(startWindow > 12e6, startWindow < 13e6), glct6_df%>% dplyr::filter(startWindow > 3.5e6, startWindow < 4.5e6)) %>%
+  ggplot()+
+  aes(x = startWindow/1e6, y = value/1e4, color = outlier)+
+  geom_vline(aes(xintercept = gene_pos/1e6, color = gene_name), size = 0.5, data = gene_locs)+
+  geom_point(size = 0.3)+
+  scale_color_manual(values = c("Low"=highlight_color, "not" ="#222222","glct1" = "gray80","glct2" = "gray60","glct3" = "#E68FAC","glct4" = "gray40","glct5"= "gray20","glct6"= "gray20"))+
+  facet_grid(.~CHROM, scales = "free")+
+  theme_bw(12) +
+  theme(legend.position = "none",
+        strip.background = element_rect(colour = NA, fill = NA),
+        strip.text.x = element_text(face = "bold")) +
+  labs(x = "Genomic Position (Mb)",
+       y = (expression(italic(theta["w"])))) 
+
+
 #####################################################################################################################################################################
 # load nucleotide tree
 
-n_tree <- treeio::read.raxml("Data/phylo/Elegans_only/RAxML_bipartitionsBranchLabels.elegans_partition")
+n_tree <- treeio::read.raxml("Data/phylo/Elegans_only/RAxML_bipartitionsBranchLabels.elegans_partition_match_protein")
 # 
 # original <- n_tree@phylo$tip.label
 # clean_names <- c("glct-5", "glct-6", "glct-6", "glct-6","glct-1","glct-2","glct-3","glct-4")
@@ -125,6 +154,11 @@ n_t <- ggtree(n_tree) +
         axis.ticks.y = element_blank(),
         axis.text.y = element_blank()) 
 
+n_t
+
+ggsave( filename = "Plots/SVG_PLOTS/FigureSXX_DNA_TREE.pdf", height = 6, width = 6.5, units = "in")
+ggsave( filename = "Plots/SVG_PLOTS/FigureSXX_DNA_TREE.png", height = 6, width = 6.5, units = "in", dpi = 300)
+ggsave( filename = "Plots/SVG_PLOTS/FigureSXX_DNA_TREE.svg", height = 6, width = 6.5, units = "in")
 
 # cp <- collapse(n_t, node=11)
 # cp + geom_cladelabel(node=11, "A")
@@ -135,7 +169,7 @@ n_t <- ggtree(n_tree) +
 #   theme(axis.line.y = element_blank(),
 #         axis.ticks.y = element_blank(),
 #         axis.text.y = element_blank()) 
-                 
+
 # load protein tree
 p_tree <- treeio::read.raxml("Data/phylo/Protein/RAxML_bipartitionsBranchLabels.elegans_partition_paralogs")
 
@@ -156,6 +190,34 @@ p_t <- ggtree(p_tree) +
         axis.ticks.y = element_blank(),
         axis.text.y = element_blank()) 
 
+ape::as.phylo(p_tree)
+treespace::treeDist(ape::root(ape::as.phylo(n_tree),outgroup="Ctg15710"), ape::root(ape::as.phylo(p_tree),outgroup="Ctg15710"), lambda = .5)
+
+treespace::treeDist(ape::rtree(12), ape::rtree(12))
+
+ggtree(ape::root(ape::as.phylo(n_tree),outgroup="Ctg15710")) + 
+  scale_color_viridis_c(direction = -1) +
+  theme(legend.position="right")+
+  theme_classic(12) +
+  geom_tiplab(size = 2) +
+  xlim(0,2.5)+ 
+  # geom_label2(aes(label=bootstrap), size = 2) +
+  theme(axis.line.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_blank()) 
+
+ggtree( ape::root(ape::as.phylo(p_tree),outgroup="Ctg15710")) + 
+  scale_color_viridis_c(direction = -1) +
+  theme(legend.position="right")+
+  theme_classic(12) +
+  geom_tiplab(size = 2) +
+  xlim(0,2.5)+ 
+  # geom_label2(aes(label=bootstrap), size = 2) +
+  theme(axis.line.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_blank()) 
+
+
 # top_plots <- cowplot::plot_grid(n_tree_final, p_t, labels = "AUTO", label_size = 14)
 # 
 # cowplot::plot_grid(top_plots, 
@@ -170,21 +232,27 @@ p_t <- ggtree(p_tree) +
 # ggsave(filename = "Plots/SVG_PLOTS/Figure5.pdf", height = 10, width = 6.5, units = "in")
 
 
-fig5 <- cowplot::plot_grid(n_t ,
-                   p_t,
-                   region + scale_y_continuous(limits = c(0,160),breaks = c(0,50,100, 150), expand = c(.01, 0)),
-                   glct6_r +
-                     scale_y_continuous(limits = c(0,160),breaks = c(0,50,100, 150), expand = c(.01, 0)) +
-                     theme(axis.title.y = element_blank(),
-                           axis.text.y = element_blank(),
-                           plot.margin = margin(.1, .1, .1, .1, "cm")) ,
-                   ncol = 2,
-                   labels = "AUTO", label_size = 14, align = "hv")
+# fig5_old <- cowplot::plot_grid(n_t ,
+#                                p_t,
+#                                region + scale_y_continuous(limits = c(0,160),breaks = c(0,50,100, 150), expand = c(.01, 0)),
+#                                glct6_r +
+#                                  scale_y_continuous(limits = c(0,160),breaks = c(0,50,100, 150), expand = c(.01, 0)) +
+#                                  theme(axis.title.y = element_blank(),
+#                                        axis.text.y = element_blank(),
+#                                        plot.margin = margin(.1, .1, .1, .1, "cm")) ,
+#                                ncol = 2,
+#                                labels = "AUTO", label_size = 14, align = "hv")
+
+fig5 = cowplot::plot_grid(p_t,
+                          facet_theta +
+                            scale_x_continuous(breaks= pretty_breaks(3)),
+                          ncol = 2, axis = "b",
+                          labels = "AUTO", label_size = 14, align = "hv", rel_widths = c(0.5, 1))
 
 
-ggsave(plot = fig5, filename = "Plots/SVG_PLOTS/Figure5.pdf", height = 6, width = 6.5, units = "in")
-ggsave(plot = fig5,filename = "Plots/SVG_PLOTS/Figure5.png", height = 6, width = 6.5, units = "in", dpi = 300)
-ggsave(plot = fig5,filename = "Plots/SVG_PLOTS/Figure5.svg", height = 6, width = 6.5, units = "in")
+ggsave(plot = fig5, filename = "Plots/SVG_PLOTS/Figure5.pdf", height = 3, width = 6.5, units = "in")
+ggsave(plot = fig5,filename = "Plots/SVG_PLOTS/Figure5.png", height = 3, width = 6.5, units = "in", dpi = 300)
+ggsave(plot = fig5,filename = "Plots/SVG_PLOTS/Figure5.svg", height = 3, width = 6.5, units = "in")
 
 
 test_dnds <- PopGenome::readData("Data/phylo/Elegans_only/fasta", format = "phylip")
@@ -201,7 +269,7 @@ cowplot::plot_grid(n_t ,
                    ncol = 2,
                    labels = "AUTO", label_size = 14, align = "hv")
 
-  # compare trees
+# compare trees
 p_tree <- treeio::read.raxml("Data/phylo/Protein/RAxML_bipartitionsBranchLabels.elegans_partition_paralogs")
 
 n_tree <- treeio::read.raxml("Data/phylo/Elegans_only/RAxML_bipartitionsBranchLabels.elegans_partition")

@@ -97,7 +97,7 @@ rrblup_map <- c2_prmaps %>%
   ggplot2::labs(x = "Genomic position (Mb)",
                 y = expression(-log[10](italic(p))))
 
-skat_maps <- data.table::fread("Processed_Data/GWAS_Skat.assoc") %>%
+skat_maps <- data.table::fread("Processed_Data/GWAS_Skat_0.5MAF.assoc") %>%
   dplyr::rowwise()%>%
   dplyr::mutate(CHROM = strsplit(strsplit(RANGE,split = ",")[[1]][1],split = ":")[[1]][1],
                 POS = as.numeric(strsplit(strsplit(strsplit(RANGE,split = ",")[[1]][1],split = ":")[[1]][2],split = "-")[[1]][1]),
@@ -124,7 +124,7 @@ skat_plot <- skat_maps%>%
                       color = "gray60", 
                       alpha = .75,  
                       size = 0.5) +
-  scale_y_continuous(limits = c(0,10), expand = c(0, 0)) +
+  scale_y_continuous(limits = c(0,8), expand = c(0, 0)) +
   labs(x = "Genomic position (Mb)", 
        y = expression(-log[10](italic(p))))
 
@@ -135,15 +135,15 @@ figure2<-cowplot::plot_grid(pheno_plot,
                             skat_plot + theme(strip.text.x = element_blank()),
                             ncol =1, 
                             label_size = 14, 
-                            rel_heights = c(0.8,1,1),
+                            rel_heights = c(0.8,0.7,0.7),
                             align = "v", 
                             axis = "l",
                             labels = "AUTO")
 
+ggsave(plot = figure2,filename = "Plots/SVG_PLOTS/Figure2_up.png", height = 6, width = 6.5, units = "in")
+ggsave(plot = figure2, filename = "Plots/SVG_PLOTS/Figure2_up.svg", height = 6, width = 6.5, units = "in")
+ggsave(plot = figure2,filename = "Plots/SVG_PLOTS/Figure2_up.pdf", height = 6, width = 6.5, units = "in")
 
-ggsave(filename = "Plots/SVG_PLOTS/Figure2_up.svg", height = 8, width = 6.5, units = "in")
-ggsave(filename = "Plots/SVG_PLOTS/Figure2_up.pdf", height = 8, width = 6.5, units = "in")
-ggsave(filename = "Plots/SVG_PLOTS/Figure2_up.png", height = 8, width = 6.5, units = "in")
 
 # figure s3
 

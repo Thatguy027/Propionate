@@ -100,6 +100,9 @@ for(g in 1:length(unique(gene_all$gene_id))){
   temp_df <- temp_all %>%
     dplyr::ungroup()%>%
     dplyr::arrange(desc(mean_gt)) %>%
+    dplyr::mutate(alt_ct = ifelse(grepl("splice", alt_ct), "Splice", alt_ct)) %>%
+    dplyr::mutate(alt_ct = ifelse(grepl("stop", alt_ct), "StopGained", alt_ct)) %>%
+    dplyr::mutate(alt_ct = ifelse(grepl("start", alt_ct), "StartLost", alt_ct)) %>%
     dplyr::mutate(pt_gt = factor(alt_ct, levels = unique(c(alt_ct[!alt_ct %in% "REF"], "REF")))) %>%
     dplyr::mutate(pt_col = factor(strain, 
                                   levels = c("BRC20067", "DL238", unique(strain)[!unique(strain) %in% c("BRC20067", "DL238")]) ,
@@ -110,29 +113,29 @@ for(g in 1:length(unique(gene_all$gene_id))){
     ggbeeswarm::geom_beeswarm(aes(x =pt_gt, y = final_pheno, 
                                   fill = pt_col, shape = pt_col, size = pt_col))+
     scale_fill_manual(values = c("hotpink3", "cadetblue3", "gray50"))+
-    scale_size_manual(values = c(5, 5, 2))+
+    scale_size_manual(values = c(1.5, 1.5, 1))+
     scale_shape_manual(values = c(23, 23, 21))+
     geom_point(aes(x = pt_gt, y = mean_gt), 
                data = dplyr::distinct(temp_df, alt_ct, gene_id, mean_gt,.keep_all=T),
                shape = 23, 
-               size = 3,
+               size = 1.5,
                fill = "red")+
     theme_bw(12) +
     facet_wrap(~gene_name, scale = "free_y") +
     labs(x = "Genotype",
-         y = "Normalized L1 Survival") +
+         y = "Normalized L1 survival") +
     theme(legend.position = "none",strip.text = element_text(face = "italic"))+
     coord_flip()
 }
 
 length(gene_plots)
 
-all_gene_plot <- cowplot::plot_grid(gene_plots[[1]]+ theme(axis.title.x = element_blank()) ,
-                                    gene_plots[[2]]+ theme(axis.title.y = element_blank(),axis.title.x = element_blank()),
+all_gene_plot <- cowplot::plot_grid(gene_plots[[1]]+ theme(axis.title.x = element_blank(), axis.text.x = element_blank()) ,
+                                    gene_plots[[2]]+ theme(axis.title.y = element_blank(),axis.title.x = element_blank(), axis.text.x = element_blank()),
                                     gene_plots[[3]],
                                     gene_plots[[4]]+theme(axis.title.y = element_blank()), 
                                     ncol = 2, 
-                                    label_size = 14, align = "vh", labels = "AUTO")
+                                    label_size = 14, align = "v", labels = "AUTO")
 all_gene_plot
 
 
@@ -143,7 +146,16 @@ gene_df <- gene_ref_flat %>%
   dplyr::select(gene_id = wbgene, strand, txstart, txend, feature_id = gene) %>%
   dplyr::arrange(txstart, feature_id)%>%
   dplyr::distinct(gene_id, feature_id, .keep_all = TRUE) %>%
-  dplyr::distinct(gene_id, peak_marker, CHROM, strand, txstart, txend, start_pos, end_pos) 
+  dplyr::distinct(gene_id, peak_marker, CHROM, strand, txstart, txend, start_pos, end_pos) %>%
+  dplyr::group_by(gene_id) %>%
+  dplyr::mutate(gene_name = ifelse(gene_id == "WBGene00011779", "bgnt-1.7",
+                                   ifelse(gene_id == "WBGene00001642", "gly-17",
+                                          ifelse(gene_id == "WBGene00001641", "gly-16",
+                                                 ifelse(gene_id == "WBGene00011780", "T15D6.5",
+                                                        ifelse(gene_id == "WBGene00003667", "nhr-77",
+                                                               ifelse(gene_id == "WBGene00011781", "glct-3",NA)))))),
+                plot_pos = mean(c(txstart,txend)))
+  
 
 
 
@@ -161,34 +173,50 @@ peak_roi_marker <- dplyr::filter(pr_roi_ld, marker == "I_12385811")
 
 peak_roi_marker
 
-ggplot(pr_roi_ld) +
-  aes(x = POS/1e6) +
-  geom_point(aes(fill = ld_r2, y = ld_r2), shape = 23, size = 3) +
-  geom_point(aes(y = ld_r2), shape = 23, size = 3, fill = "red",
-             data = peak_roi_marker) +
-  scale_fill_viridis_c(name = "R2") +
-  theme_bw(15)+
-  labs(x = "Genomic Position (Mb)",
-       y = expression(-log[10](italic(p)))) + xlim(12.3,12.46)
+# ggplot(pr_roi_ld) +
+#   aes(x = POS/1e6) +
+#   geom_point(aes(fill = ld_r2, y = ld_r2), shape = 23, size = 3) +
+#   geom_point(aes(y = ld_r2), shape = 23, size = 3, fill = "red",
+#              data = peak_roi_marker) +
+#   scale_fill_viridis_c(name = "R2") +
+#   theme_bw(15)+
+#   labs(x = "Genomic Position (Mb)",
+#        y = expression(-log[10](italic(p)))) + xlim(12.3,12.46)
 
-ggplot(pr_roi_ld) +
+cor_plot <- ggplot(pr_roi_ld) +
   geom_rect(aes(xmin = ifelse(strand == "+", txstart/1e6, txend/1e6),
                 xmax = ifelse(strand == "+", txend/1e6, txstart/1e6),
                 ymin = 1.05,
                 ymax = 0), size = 1, data = gene_df, alpha = 0.25) +
-  geom_point(aes(x = POS/1e6, fill = ld_r2, y = ld_r2), shape = 23, size = 3) +
-  geom_point(aes(x = POS/1e6, y = ld_r2), shape = 23, size = 3, fill = "red",
+  geom_text(aes(x = plot_pos/1e6,
+                label = gene_name,
+                y = 1.08), fontface="italic", data = gene_df) +
+  geom_point(aes(x = POS/1e6, y = ld_r2), fill = "black", shape = 23, size = 1) +
+  geom_point(aes(x = POS/1e6, y = ld_r2), shape = 23, size = 1.5, fill = "red",
              data = peak_roi_marker) +
   scale_fill_viridis_c(name = "R2") +
-  theme_bw(15)+
+  theme_bw(12)+
+  scale_y_continuous(breaks = c(0,0.5,1))+
   geom_segment(aes(x = ifelse(strand == "+", txstart/1e6, txend/1e6),
                    xend = ifelse(strand == "+", txend/1e6, txstart/1e6),
                    y = 1.05,
                    yend = 1.05),
                arrow = arrow(length = unit(5, "points")), size = 1, data = gene_df) +
-
   labs(x = "Genomic Position (Mb)",
-       y = expression(-log[10](italic(p)))) + xlim(12.3,12.46)
+       y = expression(italic(r)^2)) + xlim(12.3725,12.39)
+
+
+cowplot::plot_grid(all_gene_plot, 
+                   cor_plot,
+                   ncol = 1, 
+                   label_size = 14, labels = c(NA,"E"), rel_heights = c(1,.8))
+
+
+ggsave(filename = "Plots/SVG_PLOTS/FigureS4_new.png", height = 10, width = 7.5, units = "in", dpi=300)
+ggsave(filename = "Plots/SVG_PLOTS/FigureS4_new.pdf", height = 10, width = 7.5, units = "in")
+ggsave(filename = "Plots/SVG_PLOTS/FigureS4_new.svg", height = 10, width = 7.5, units = "in")
+
+
 
 
 

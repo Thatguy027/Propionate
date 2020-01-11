@@ -50,7 +50,8 @@ pheno_plot <- reg_pheno%>%
   scale_fill_manual(values=c("hotpink3","gray60","gray60","cadetblue3"))+
   scale_x_discrete(labels=c("BRC20067" = "BRC20067", 
                             "DL238" = "DL238", 
-                            "BRC20067_Del" = expression(atop("BRC20067",Delta~italic("glct-3"))),
+                            "BRC20067_Del" = expression(atop("BRC20067","Phe19fs")),
+                            # "BRC20067_Del" = expression(atop("BRC20067",Delta~italic("glct-3"))),
                             "BRC20067_Swap" = expression(atop("BRC20067","Gly16*"))))+
   ggbeeswarm::geom_beeswarm(cex = 0.7, priority = "density",  size = 0.5, alpha = 0.5)+
   theme_classic(12)+
@@ -61,6 +62,15 @@ pheno_plot <- reg_pheno%>%
   stat_compare_means(comparisons = l_compare, label.y = c(0.75, 0.85, 0.05),tip.length =c(0.01,0.01,-0.01),
                      label = "p.signif", method = "t.test",
                      ref.group = "BRC20067", hide.ns = TRUE, size = 5, color = "gray50")
+
+# effect sizes
+p_effect <- sjstats::anova_stats(car::Anova(aov(Survival ~ Strain, data = dplyr::filter(reg_pheno, Strain %in% c("BRC20067", "DL238")))))[1,11]
+d_effect <- sjstats::anova_stats(car::Anova(aov(Survival ~ Strain, data = dplyr::filter(reg_pheno, Strain %in% c("BRC20067", "BRC20067_Del")))))[1,11]
+s_effect <- sjstats::anova_stats(car::Anova(aov(Survival ~ Strain, data = dplyr::filter(reg_pheno, Strain %in% c("BRC20067", "BRC20067_Swap")))))[1,11]
+# BRC - del
+d_effect/p_effect
+# BRC - swap
+s_effect/p_effect
 
 #####################################################################################################################################################################
 # load world map and remove antartica 

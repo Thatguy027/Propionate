@@ -50,6 +50,11 @@ pr_resid <- p_pr%>%
 
 write.table(pr_resid, file ="Processed_Data/GWAS_PRpheno_replicates.tsv", col.names = T, row.names = F, quote = F, sep = "\t")
 
+h2_df <- pr_resid %>%
+  dplyr::select(strain, pheno=resid)
+
+H2.fun(h2_df)
+
 pr_resid$strain <- factor(pr_resid$strain,levels = pr_resid$strain,labels = pr_resid$strain, ordered = T)
 
 pr_resid_pldf <- pr_resid %>%
@@ -292,7 +297,13 @@ glct3_pr <- dplyr::filter(glct3, SAMPLE %in% unique(c2_prmaps$strain)) %>%
   dplyr::filter(effect == "stop_gained") %>%
   dplyr::arrange(strain)
 
+
 y$glct <- glct3_pr$allele
+
+y_cor <- y %>%
+  dplyr::mutate(glct = ifelse(glct=="G",1,0))
+
+cor(y_cor$value, y_cor$glct, method = "spearman")
 
 # additive only
 complete_broad_glct <- sommer::mmer(value ~ glct, 
