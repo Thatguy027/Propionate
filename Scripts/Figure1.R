@@ -93,6 +93,21 @@ finescale_h2 <- sampled_h2_df %>%
   scale_y_continuous(limits = c(0,1),breaks = c(0,0.25,0.50,0.75,1)) +
   labs(x = "Propionate concentration (mM)", y = "Broad-sense heritability")
  
+
+# survival
+
+survival.lm <- lm(pheno ~ strain, data = complete_dr_means %>% dplyr::filter(pa_conc == 100))
+survival.av <- aov(survival.lm)
+summary(survival.av)
+tukey.test.survival <- TukeyHSD(survival.av)
+
+plot(tukey.test.survival)
+
+tukey.test.survival$strain %>%
+  data.frame() %>%
+  dplyr::mutate(s_comp = row.names(.)) %>%
+  dplyr::filter(p.adj < 0.05)
+
 # ld50 
 
 l50.lm <- lm(ld50 ~ strain, data = pl50)

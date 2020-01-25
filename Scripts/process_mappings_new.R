@@ -4,9 +4,28 @@ library(cegwas)
 library(cegwas2)
 library(broom)
 library(cowplot)
+library(lme4)
+library(sommer)
 
 try(setwd(dirname(rstudioapi::getActiveDocumentContext()$path)))
 setwd("..")
+
+
+H2.fun <- function(x){
+  pdata <- x
+  pdata = split(pdata$pheno, pdata$strain)
+  pdata.notNAcnt = sapply(pdata, function(x){sum(!is.na(x))})
+  pdata[pdata.notNAcnt<2]=NULL
+  pdata.melted = melt(pdata)
+  names(pdata.melted)=c('pheno', 'strain')
+  pdata.melted$strain=as.factor(pdata.melted$strain)
+  reffMod = lmer(pheno ~ 1 + (1|strain), data=pdata.melted)
+  Var_Random_effect <- as.numeric(VarCorr(reffMod))
+  Var_Residual <- attr(VarCorr(reffMod), "sc")^2
+  H2 <- Var_Random_effect/(Var_Random_effect+Var_Residual)
+  print(H2)
+}
+
 
 source("Scripts/Figure_Functions.R")
 
