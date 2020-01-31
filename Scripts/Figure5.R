@@ -114,6 +114,9 @@ glct6_r <- d2_df %>%
        y = (expression(italic(theta["w"]))))
 
 
+
+write.table(dplyr::bind_rows(td_df, glct6_df), file = "Final_Tables/Supplemental_Table_WATTERSON_THETA.tsv", sep = "\t", quote = F, row.names = F, col.names = T)
+
 gene_locs <- data.frame(CHROM = c("I","I","I","I","I","IV"),
                         gene_name = c("glct1","glct2","glct3","glct4","glct5","glct6"),
                         gene_pos = c(12337968,12435726,12385766,12317321,12453389,3784237))
